@@ -65,6 +65,7 @@ class DBWNode(object):
         # TODO: Subscribe to all the topics you need to
         rospy.Subscriber('/vehicle/dbw_enabled', Bool, self.dbw_enabled_cb)
         rospy.Subscriber('/current_velocity', TwistStamped, self.dbw_enabled_cb)
+        # rospy.Subscriber('/current_pose', PoseStamped, self.dbw_enabled_cb)
 
         self.loop()
 
@@ -79,11 +80,12 @@ class DBWNode(object):
             #                                                     <dbw status>,
             #                                                     <any other argument you need>)
             # Test only
-            throttle = 0.02
+            throttle = 0.22
             brake = 0
             steering = 0
-            if self.dbw_enabled:
-                self.publish(throttle, brake, steering);
+            # if self.dbw_enabled:
+            self.publish(throttle, brake, steering)
+            rospy.loginfo(throttle, brake, steering)
             rate.sleep()
 
     def publish(self, throttle, brake, steer):
