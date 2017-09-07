@@ -79,7 +79,7 @@ class DBWNode(object):
             #                                                     <dbw status>,
             #                                                     <any other argument you need>)
             # Test only
-            throttle = 0
+            throttle = 0.02
             brake = 0
             steering = 0
             if self.dbw_enabled:
