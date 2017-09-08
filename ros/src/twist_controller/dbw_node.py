@@ -82,7 +82,7 @@ class DBWNode(object):
             # Test only
             throttle = 0.22
             brake = 0
-            steering = 0
+            steering = 0.1
             # if self.dbw_enabled:
             self.publish(throttle, brake, steering)
             rospy.loginfo(throttle, brake, steering)
