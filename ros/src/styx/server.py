@@ -6,6 +6,8 @@ import eventlet.wsgi
 import time
 from flask import Flask, render_template
 
+import json
+
 from bridge import Bridge
 from conf import conf
 
@@ -23,7 +25,7 @@ def connect(sid, environ):
 def send(topic, data):
     s = 1
     msgs.append((topic, data))
-    #sio.emit(topic, data=json.dumps(data), skip_sid=True)
+    sio.emit(topic, data=json.dumps(data), skip_sid=True)
 
 bridge.register_server(send)
 
@@ -64,5 +66,5 @@ if __name__ == '__main__':
     app = socketio.Middleware(sio, app)
 
     # deploy as an eventlet WSGI server
-    # eventlet.wsgi.server(eventlet.listen(('', 4567)), app)
-    eventlet.wsgi.server(eventlet.listen(('127.0.0.1', 4567)), app)
+    eventlet.wsgi.server(eventlet.listen(('', 4567)), app)
+    # eventlet.wsgi.server(eventlet.listen(('127.0.0.1', 4567)), app)
