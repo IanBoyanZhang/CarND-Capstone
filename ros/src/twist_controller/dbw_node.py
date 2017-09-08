@@ -85,7 +85,7 @@ class DBWNode(object):
             steering = 0.1
             # if self.dbw_enabled:
             self.publish(throttle, brake, steering)
-            rospy.loginfo(throttle, brake, steering)
+            # rospy.loginfo(throttle, brake, steering)
             rate.sleep()
 
     def publish(self, throttle, brake, steer):
