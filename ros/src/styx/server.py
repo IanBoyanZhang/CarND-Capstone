@@ -23,9 +23,9 @@ def connect(sid, environ):
 def send(topic, data):
     s = 1
     msgs.append((topic, data))
-    #sio.emit(topic, data=json.dumps(data), skip_sid=True)
+    sio.emit(topic, data=json.dumps(data), skip_sid=True)
 
-bridge.register_server(send, sio)
+bridge.register_server(send)
 
 @sio.on('telemetry')
 def telemetry(sid, data):

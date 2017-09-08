@@ -57,9 +57,9 @@ class DBWNode(object):
         # self.controller = TwistController(<Arguments you wish to provide>)
 
         self.dbw_enabled = False;
-        # self.steer = 0
-        # self.brake = 0
-        # self.throttle = 0
+        self.steer = 0.22
+        self.brake = 0
+        self.throttle = 0
         # self.steer_data = []
 
         # TODO: Subscribe to all the topics you need to
