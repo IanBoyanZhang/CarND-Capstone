@@ -106,8 +106,8 @@ class DBWNode(object):
         bcmd.pedal_cmd = brake
         self.brake_pub.publish(bcmd)
 
-    def dbw_enabled_cb(self, msg):
-        self.dbw_enabled = msg.data
+    # def dbw_enabled_cb(self, msg):
+    #     self.dbw_enabled = msg.data
 
 if __name__ == '__main__':
     DBWNode()
