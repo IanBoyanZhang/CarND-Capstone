@@ -65,6 +65,7 @@ class DBWNode(object):
         # TODO: Subscribe to all the topics you need to
         rospy.Subscriber('/vehicle/dbw_enabled', Bool, self.dbw_enabled_cb)
         rospy.Subscriber('/current_velocity', TwistStamped, self.current_velocity_cb)
+        rospy.Subscriber('/twist_cmd', TwistStamped, self.dbw_twist_cb)
         # rospy.Subscriber('/current_pose', PoseStamped, self.dbw_enabled_cb)
 
         self.loop()
@@ -110,6 +111,9 @@ class DBWNode(object):
         self.dbw_enabled = msg.data
 
     def current_velocity_cb(self, msg):
-        return 0
+        pass
+
+    def dbw_twist_cb(self, msg):
+        pass
 if __name__ == '__main__':
     DBWNode()
