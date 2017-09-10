@@ -99,7 +99,6 @@ class WaypointUpdater(object):
         return i
 
 
-
 if __name__ == '__main__':
     try:
         WaypointUpdater()
