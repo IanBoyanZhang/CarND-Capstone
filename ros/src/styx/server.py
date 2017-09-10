@@ -26,10 +26,10 @@ def connect(sid, environ):
     print("connect ", sid)
 
 def send(topic, data):
-    s = 1
-    msgs.append((topic, data))
-    sio.emit(topic, data=json.dumps(data), skip_sid=True)
-
+    # s = 1
+    # msgs.append((topic, data))
+    # sio.emit(topic, data=json.dumps(data), skip_sid=True)
+    msgs[topic] = data
 bridge.register_server(send)
 
 @sio.on('telemetry')
