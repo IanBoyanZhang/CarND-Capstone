@@ -22,7 +22,7 @@ class Controller(object):
         self.steer_ratio = args[7]
         self.max_lat_accel = args[8]
         self.max_steer_angle = args[9]
-        self.min_speed = .1
+        self.min_speed = args[10]
         self.yawController = YawController(self.wheel_base,
                                            self.steer_ratio, self.min_speed, self.max_lat_accel, self.max_steer_angle)
         pass
@@ -33,6 +33,9 @@ class Controller(object):
         linear_velocity = args[1]
         angular_velocity = args[2]
         current_velocity = args[3]
+
+        # Bad operand type for abs() Vector 3
+        # Todo calculate part of the velocity for all three speed
 
         # Steer and steer ratio
         steer = self.yawController.get_steering(linear_velocity, angular_velocity, current_velocity);
