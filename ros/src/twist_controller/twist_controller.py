@@ -12,16 +12,16 @@ class Controller(object):
         # _kd_steer = args[2]
 
         # pid_steer = PID(_kp_steer, _ki_steer, _kd_steer)
-        vehicle_mass = args[0]
-        fuel_capacity = args[1]
-        brake_deadband = args[2]
-        decel_limit = args[3]
-        accel_limit = args[4]
-        wheel_radius = args[5]
-        wheel_base = args[6]
-        steer_ratio = args[7]
-        max_lat_accel = args[8]
-        max_steer_angle = args[9]
+        self.vehicle_mass = args[0]
+        self.fuel_capacity = args[1]
+        self.brake_deadband = args[2]
+        self.decel_limit = args[3]
+        self.accel_limit = args[4]
+        self.wheel_radius = args[5]
+        self.wheel_base = args[6]
+        self.steer_ratio = args[7]
+        self.max_lat_accel = args[8]
+        self.max_steer_angle = args[9]
         self.yawController = YawController(self.wheel_base,
                                            self.steer_ratio, self.min_speed, self.max_lat_accel, self.max_steer_angle)
         pass
