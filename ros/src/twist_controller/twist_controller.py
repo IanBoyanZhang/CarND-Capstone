@@ -2,6 +2,7 @@ from yaw_controller import YawController
 GAS_DENSITY = 2.858
 ONE_MPH = 0.44704
 
+import rospy
 
 class Controller(object):
     def __init__(self, *args, **kwargs):
@@ -37,6 +38,8 @@ class Controller(object):
         # Bad operand type for abs() Vector 3
         # Todo calculate part of the velocity for all three speed
 
+        rospy.loginfo(linear_velocity)
+
         # Steer and steer ratio
-        steer = self.yawController.get_steering(linear_velocity, angular_velocity, current_velocity);
+        # steer = self.yawController.get_steering(linear_velocity, angular_velocity, current_velocity);
         return 1., 0., 0.
