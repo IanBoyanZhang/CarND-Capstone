@@ -66,9 +66,14 @@ class DBWNode(object):
                                      max_steer_angle)
 
         self.dbw_enabled = False
-        self.steer = 0.02
-        self.brake = 0
-        self.throttle = 0
+        self.steer = .0
+        self.brake = .0
+        self.throttle = .0
+
+        self.linear_velocity = .0
+        self.angular_velocity = .0
+        self.current_velocity = .0
+        self.dbw_enabled = False
         # self.steer_data = []
 
         # TODO: Subscribe to all the topics you need to

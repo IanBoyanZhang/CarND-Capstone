@@ -41,7 +41,6 @@ class WaypointUpdater(object):
         # map_wp is the base_waypoints we get
         self.map_wp = None
 
-
         rospy.spin()
 
     def pose_cb(self, msg):
