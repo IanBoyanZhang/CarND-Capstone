@@ -22,8 +22,8 @@ class Controller(object):
         steer_ratio = args[7]
         max_lat_accel = args[8]
         max_steer_angle = args[9]
-        self.yawController = YawController(wheel_base=self.wheel_base,
-                              self.steer_ratio, self.min_speed, self.max_lat_accel, self.max_steer_angle)
+        self.yawController = YawController(self.wheel_base,
+                                           self.steer_ratio, self.min_speed, self.max_lat_accel, self.max_steer_angle)
         pass
 
     def control(self, *args, **kwargs):
