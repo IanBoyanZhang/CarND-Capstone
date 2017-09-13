@@ -76,7 +76,6 @@ class DBWNode(object):
         self.linear_velocity = .0
         self.angular_velocity = .0
         self.current_velocity = .0
-        self.dbw_enabled = False
         # self.steer_data = []
 
         # TODO: Subscribe to all the topics you need to
