@@ -129,7 +129,7 @@ class DBWNode(object):
         self.dbw_enabled = msg.data
 
     def current_velocity_cb(self, msg):
-        self.current_velocity = msg.twist.current_velocity
+        self.current_velocity = msg.twist.linear
         pass
 
     def dbw_twist_cb(self, msg):
