@@ -76,7 +76,6 @@ class DBWNode(object):
         self.linear_velocity = .0
         self.angular_velocity = .0
         self.current_velocity = .0
-        self.dbw_enabled = False
         # self.steer_data = []
 
         # TODO: Subscribe to all the topics you need to
@@ -89,6 +88,7 @@ class DBWNode(object):
 
     def loop(self):
         # rate = rospy.Rate(50) # 50Hz
+        # For low performance env
         rate = rospy.Rate(1) # 50Hz
         while not rospy.is_shutdown():
             # TODO: Get predicted throttle, brake, and steering using `twist_controller`
@@ -129,12 +129,12 @@ class DBWNode(object):
         self.dbw_enabled = msg.data
 
     def current_velocity_cb(self, msg):
-        self.current_velocity = msg.twist.current_velocity
+        self.current_velocity = msg.twist.linear.x
         pass
 
     def dbw_twist_cb(self, msg):
-        self.linear_velocity = msg.twist.linear
-        self.angular_velocity = msg.twist.angular
+        self.linear_velocity = msg.twist.linear.x
+        self.angular_velocity = msg.twist.angular.z
         pass
 if __name__ == '__main__':
     DBWNode()

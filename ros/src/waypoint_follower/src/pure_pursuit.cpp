@@ -32,6 +32,7 @@
 
 constexpr int LOOP_RATE = 30; //processing frequency
 
+// For low performance environment
 constexpr int PUB_SUB_QUEUE_SIZE = 1
 
 int main(int argc, char **argv)

@@ -7,12 +7,6 @@ import rospy
 class Controller(object):
     def __init__(self, *args, **kwargs):
         # TODO: Implement
-        # PID controller(s)
-        # _kp_steer = args[0]
-        # _ki_steer = args[1]
-        # _kd_steer = args[2]
-
-        # pid_steer = PID(_kp_steer, _ki_steer, _kd_steer)
         self.vehicle_mass = args[0]
         self.fuel_capacity = args[1]
         self.brake_deadband = args[2]
@@ -41,5 +35,5 @@ class Controller(object):
         rospy.loginfo(linear_velocity)
 
         # Steer and steer ratio
-        # steer = self.yawController.get_steering(linear_velocity, angular_velocity, current_velocity);
+        steer = self.yawController.get_steering(linear_velocity, angular_velocity, current_velocity);
         return 1., 0., 0.
