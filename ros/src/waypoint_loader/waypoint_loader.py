@@ -73,6 +73,7 @@ class WaypointLoader(object):
 
     def publish(self, waypoints):
         # rate = rospy.Rate(40)
+        # Low performance env
         rate = rospy.Rate(1)
         while not rospy.is_shutdown():
             lane = Lane()

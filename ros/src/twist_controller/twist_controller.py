@@ -41,5 +41,5 @@ class Controller(object):
         rospy.loginfo(linear_velocity)
 
         # Steer and steer ratio
-        # steer = self.yawController.get_steering(linear_velocity, angular_velocity, current_velocity);
+        steer = self.yawController.get_steering(linear_velocity, angular_velocity, current_velocity);
         return 1., 0., 0.
