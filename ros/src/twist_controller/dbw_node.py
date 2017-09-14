@@ -2,8 +2,9 @@
 
 import rospy
 from std_msgs.msg import Bool
+from styx_msgs.msg import Lane, Waypoint
 from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd, SteeringReport
-from geometry_msgs.msg import TwistStamped
+from geometry_msgs.msg import TwistStamped, PoseStamped
 import math
 
 from twist_controller import Controller
@@ -76,20 +77,25 @@ class DBWNode(object):
         self.linear_velocity = .0
         self.angular_velocity = .0
         self.current_velocity = .0
+        self.current_pose = None
         self.dbw_enabled = False
+
+        self.final_waypoints = None
         # self.steer_data = []
 
         # TODO: Subscribe to all the topics you need to
         rospy.Subscriber('/vehicle/dbw_enabled', Bool, self.dbw_enabled_cb)
         rospy.Subscriber('/current_velocity', TwistStamped, self.current_velocity_cb)
         rospy.Subscriber('/twist_cmd', TwistStamped, self.dbw_twist_cb)
+        rospy.Subscriber('/current_pose', PoseStamped, self.current_pose_cb)
+        rospy.Subscriber('/final_waypoints', Lane, self.final_waypoints_cb)
 
         self.loop()
 
     def loop(self):
         # rate = rospy.Rate(50) # 50Hz
         # Low performance env
-        rate = rospy.Rate(1) # 50Hz
+        rate = rospy.Rate(1) # 1Hz
         while not rospy.is_shutdown():
             # TODO: Get predicted throttle, brake, and steering using `twist_controller`
             # You should only publish the control commands if dbw is enabled
@@ -130,11 +136,25 @@ class DBWNode(object):
 
     def current_velocity_cb(self, msg):
         self.current_velocity = msg.twist.linear.x
-        pass
 
     def dbw_twist_cb(self, msg):
         self.linear_velocity = msg.twist.linear.x
         self.angular_velocity = msg.twist.angular.z
-        pass
+
+    def current_pose_cb(self, msg):
+        self.current_pose = msg.pose
+
+    def final_waypoints_cb(self, msg):
+        self.final_waypoints = msg.waypoints
+
+    def calculate_cte(self, waypoints, pose):
+        """
+        https://answers.ros.org/question/69754/quaternion-transformations-in-python/
+        :param waypoints: ROS message
+        :param pose: ROS message
+        :return:
+        """
+        car_yaw = tf.transformations.eular_from_quaternion(pose.quaternion)[2]
+
 if __name__ == '__main__':
     DBWNode()
