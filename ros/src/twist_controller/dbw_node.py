@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
+import tf
 from std_msgs.msg import Bool
 from styx_msgs.msg import Lane, Waypoint
 from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd, SteeringReport
@@ -56,6 +57,19 @@ class DBWNode(object):
         self.brake_pub = rospy.Publisher('/vehicle/brake_cmd',
                                          BrakeCmd, queue_size=1)
 
+        params = {
+            'vehicle_mass': vehicle_mass,
+            'fuel_capacity': fuel_capacity,
+            'brake_deadband': brake_deadband,
+            'decel_limit': decel_limit,
+            'accel_limit': accel_limit,
+            'wheel_radius': wheel_radius,
+            'wheel_base': wheel_base,
+            'steer_ratio': steer_ratio,
+            'max_lat_accel': max_lat_accel,
+            'max_steer_angle': max_steer_angle
+        }
+
         # TODO: Create `TwistController` object
         self.controller = Controller(vehicle_mass,
                                      fuel_capacity,
@@ -74,8 +88,9 @@ class DBWNode(object):
         self.brake = .0
         self.throttle = .0
 
-        self.linear_velocity = .0
-        self.angular_velocity = .0
+        self.linear_velocity_setpoint = .0
+        self.angular_velocity_setpoint = .0
+        # Only linear
         self.current_velocity = .0
         self.current_pose = None
         self.dbw_enabled = False
@@ -87,7 +102,7 @@ class DBWNode(object):
         rospy.Subscriber('/vehicle/dbw_enabled', Bool, self.dbw_enabled_cb)
         rospy.Subscriber('/current_velocity', TwistStamped, self.current_velocity_cb)
         rospy.Subscriber('/twist_cmd', TwistStamped, self.dbw_twist_cb)
-        rospy.Subscriber('/current_pose', PoseStamped, self.current_pose_cb)
+        # rospy.Subscriber('/current_pose', PoseStamped, self.current_pose_cb)
         rospy.Subscriber('/final_waypoints', Lane, self.final_waypoints_cb)
 
         self.loop()
@@ -99,8 +114,8 @@ class DBWNode(object):
         while not rospy.is_shutdown():
             # TODO: Get predicted throttle, brake, and steering using `twist_controller`
             # You should only publish the control commands if dbw is enabled
-            throttle, brake, steering = self.controller.control(self.linear_velocity,
-                                                                self.angular_velocity,
+            throttle, brake, steering = self.controller.control(self.linear_velocity_setpoint,
+                                                                self.angular_velocity_setpoint,
                                                                 self.current_velocity,
                                                                 self.dbw_enabled
                                                                 # Other params
@@ -138,23 +153,24 @@ class DBWNode(object):
         self.current_velocity = msg.twist.linear.x
 
     def dbw_twist_cb(self, msg):
-        self.linear_velocity = msg.twist.linear.x
-        self.angular_velocity = msg.twist.angular.z
+        self.linear_velocity_setpoint = msg.twist.linear.x
+        self.angular_velocity_setpoint = msg.twist.angular.z
 
-    def current_pose_cb(self, msg):
-        self.current_pose = msg.pose
+    # def current_pose_cb(self, msg):
+    #     self.current_pose = msg.pose
 
     def final_waypoints_cb(self, msg):
         self.final_waypoints = msg.waypoints
 
-    def calculate_cte(self, waypoints, pose):
-        """
-        https://answers.ros.org/question/69754/quaternion-transformations-in-python/
-        :param waypoints: ROS message
-        :param pose: ROS message
-        :return:
-        """
-        car_yaw = tf.transformations.eular_from_quaternion(pose.quaternion)[2]
+    # def calculate_cte(self, waypoints, pose):
+    #     """
+    #     https://answers.ros.org/question/69754/quaternion-transformations-in-python/
+    #     :param waypoints: ROS message
+    #     :param pose: ROS message
+    #     :return:
+    #     """
+    #     car_yaw = tf.transformations.eular_from_quaternion(pose.quaternion)[2]
+    #     px = pose.po
 
 if __name__ == '__main__':
     DBWNode()
