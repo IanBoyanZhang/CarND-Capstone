@@ -57,6 +57,9 @@ class DBWNode(object):
         self.brake_pub = rospy.Publisher('/vehicle/brake_cmd',
                                          BrakeCmd, queue_size=1)
 
+        # Control scheme:
+        # Angle control is done by pure pursuit through Autoware
+        # Linear control will be done through linear PID in twist_controller?
         params = {
             'vehicle_mass': vehicle_mass,
             'fuel_capacity': fuel_capacity,
