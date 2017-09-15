@@ -121,8 +121,8 @@ class DBWNode(object):
             throttle = 0.02
             brake = 0
             steering = 0.1
-            # if self.dbw_enabled:
-            self.publish(throttle, brake, steering)
+            if self.dbw_enabled:
+                self.publish(throttle, brake, steering)
             rate.sleep()
 
     def publish(self, throttle, brake, steer):
