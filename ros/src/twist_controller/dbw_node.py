@@ -71,6 +71,7 @@ class DBWNode(object):
             'steer_ratio': steer_ratio,
             'max_lat_accel': max_lat_accel,
             'max_steer_angle': max_steer_angle
+            'reset_controller':
         }
 
         # TODO: Create `TwistController` object
@@ -87,6 +88,7 @@ class DBWNode(object):
                                      min_speed)
 
         self.dbw_enabled = False
+        self._prev_dbw_enabled = self.dbw_enabled
         self.steer = .0
         self.brake = .0
         self.throttle = .0
@@ -124,8 +126,13 @@ class DBWNode(object):
             throttle = 0.02
             brake = 0
             steering = 0.1
+            if self.edge_trigger():
+                # Reset controller pid here
+                pass
+
             if self.dbw_enabled:
                 self.publish(throttle, brake, steering)
+
             rate.sleep()
 
     def publish(self, throttle, brake, steer):
@@ -147,6 +154,7 @@ class DBWNode(object):
         self.brake_pub.publish(bcmd)
 
     def dbw_enabled_cb(self, msg):
+        self._prev_dbw_enabled = self.dbw_enabled
         self.dbw_enabled = msg.data
 
     def current_velocity_cb(self, msg):
@@ -171,6 +179,16 @@ class DBWNode(object):
     #     """
     #     car_yaw = tf.transformations.eular_from_quaternion(pose.quaternion)[2]
     #     px = pose.po
+
+    def edge_trigger(self):
+        """
+            Raising Edge
+        :return:
+        """
+        if self._prev_dbw_enabled is False and self.dbw_enabled is True:
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     DBWNode()

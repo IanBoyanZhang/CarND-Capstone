@@ -29,6 +29,8 @@ class Controller(object):
         angular_velocity_setpoint = args[2]
         current_velocity = args[3]
 
+        # Reset PID when there is enable, disable event, capturing edge trigger?
+
         # Steer and steer ratio
         steer = self.yawController.get_steering(linear_velocity_setpoint,
                                                 angular_velocity_setpoint, current_velocity)
