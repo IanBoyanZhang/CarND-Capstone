@@ -25,15 +25,11 @@ class Controller(object):
     def control(self, *args, **kwargs):
         # TODO: Change the arg, kwarg list to suit your needs
         # Return throttle, brake, steer
-        linear_velocity = args[1]
-        angular_velocity = args[2]
+        linear_velocity_setpoint = args[1]
+        angular_velocity_setpoint = args[2]
         current_velocity = args[3]
 
-        # Bad operand type for abs() Vector 3
-        # Todo calculate part of the velocity for all three speed
-
-        # rospy.loginfo(linear_velocity)
-
         # Steer and steer ratio
-        steer = self.yawController.get_steering(linear_velocity, angular_velocity, current_velocity);
+        steer = self.yawController.get_steering(linear_velocity_setpoint,
+                                                angular_velocity_setpoint, current_velocity)
         return 1., 0., 0.
