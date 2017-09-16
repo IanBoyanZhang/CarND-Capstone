@@ -61,7 +61,7 @@ class Controller(object):
         # Sample time interval:
         timestamp = rospy.get_time()
         if not self._now:
-            _sample_time = 0.02 # 50 Hz
+            _sample_time = 0.02  # 50 Hz
         else:
             _sample_time = timestamp - self._now
         self._now = timestamp
@@ -71,13 +71,16 @@ class Controller(object):
         _control_correction = self.linear_pid.step(_error, _sample_time)
 
         if _control_correction > 0:
-            # Throttle
-            pass
+            accel = _control_correction
+            # Should multiple it by the nominal value of control input
+            throttle = accel
         else:
-            # Brake
-            pass
+            # Factor to achieve around 20000 max brake torque
+            decel = _control_correction * 10
+            brake = self._brake_torque_base * decel
 
         # Steer and steer ratio
-        steer = self.yaw_controller.get_steering(linear_velocity_setpoint,
+        steering = self.yaw_controller.get_steering(linear_velocity_setpoint,
                                                  angular_velocity_setpoint, current_velocity)
-        return 1., 0., 0.
+        # return 1., 0., 0.
+        return throttle, brake, steering

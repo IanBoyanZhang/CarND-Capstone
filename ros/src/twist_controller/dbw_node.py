@@ -108,7 +108,7 @@ class DBWNode(object):
     def loop(self):
         # rate = rospy.Rate(50) # 50Hz
         # For low performance env
-        rate = rospy.Rate(1) # 50Hz
+        rate = rospy.Rate(1)  # 50Hz
         while not rospy.is_shutdown():
             # TODO: Get predicted throttle, brake, and steering using `twist_controller`
             # You should only publish the control commands if dbw is enabled
@@ -128,13 +128,14 @@ class DBWNode(object):
             # 20000 seems a good number
 
             # Test only
-            throttle = 0.02
-            brake = 0
-            steering = 0.1
+            throttle_scale = 0.5
+
+            # throttle = 0.02
+            # brake = 0
+            # steering = 0.1
             if self.edge_trigger():
                 # Reset controller pid here
                 self.controller.reset()
-                pass
 
             if self.dbw_enabled:
                 self.publish(throttle, brake, steering)
@@ -188,7 +189,7 @@ class DBWNode(object):
 
     def edge_trigger(self):
         """
-            Raising Edge
+        Raising Edge
         :return:
         """
         if self._prev_dbw_enabled is False and self.dbw_enabled is True:
