@@ -59,7 +59,7 @@ class Controller(object):
         current_velocity = args[3]
 
         # Sample time interval:
-        timestamp = rospy.Time.now()
+        timestamp = rospy.get_time()
         if not self._now:
             _sample_time = 0.02 # 50 Hz
         else:
