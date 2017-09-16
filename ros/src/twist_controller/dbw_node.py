@@ -135,8 +135,12 @@ class DBWNode(object):
                 # Reset controller pid here
                 self.controller.reset()
 
-            if self.dbw_enabled:
-                self.publish(throttle, brake, steering)
+            # if self.dbw_enabled:
+
+            rospy.loginfo("Throttle: %s: ", throttle)
+            rospy.loginfo("brake: %s: ", brake)
+            rospy.loginfo("steering: %s: ", steering)
+            self.publish(throttle, brake, steering)
 
             rate.sleep()
 
