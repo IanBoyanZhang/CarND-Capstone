@@ -1,25 +1,54 @@
 from yaw_controller import YawController
-GAS_DENSITY = 2.858
-ONE_MPH = 0.44704
+from pid import PID
 
 import rospy
+
+GAS_DENSITY = 2.858
+ONE_MPH = 0.44704
 
 class Controller(object):
     def __init__(self, *args, **kwargs):
         # TODO: Implement
-        self.vehicle_mass = args[0]
-        self.fuel_capacity = args[1]
-        self.brake_deadband = args[2]
-        self.decel_limit = args[3]
-        self.accel_limit = args[4]
-        self.wheel_radius = args[5]
-        self.wheel_base = args[6]
-        self.steer_ratio = args[7]
-        self.max_lat_accel = args[8]
-        self.max_steer_angle = args[9]
-        self.min_speed = args[10]
-        self.yawController = YawController(self.wheel_base,
-                                           self.steer_ratio, self.min_speed, self.max_lat_accel, self.max_steer_angle)
+        vehicle_mass = kwargs['vehicle_mass']
+        fuel_capacity = kwargs['fuel_capacity']
+        brake_deadband = kwargs['brake_deadband']
+        decel_limit = kwargs['decel_limit']
+        accel_limit = kwargs['accel_limit']
+        wheel_radius = kwargs['wheel_radius']
+        wheel_base = kwargs['wheel_base']
+        steer_ratio = kwargs['steer_ratio']
+        max_lat_accel = kwargs['max_lat_accel']
+        max_steer_angle = kwargs['max_steer_angle']
+        min_speed = kwargs['min_speed']
+
+        linear_p_term = kwargs['linear_p_term']
+        linear_i_term = kwargs['linear_i_term']
+        linear_d_term = kwargs['linear_d_term']
+
+        # Calculate required braking torque according to vehicle dynamics?
+        _total_vehicle_mass = vehicle_mass + fuel_capacity * GAS_DENSITY
+        # Use F = ma to calculate the
+        # F_max = m * a_max
+        # T_max = F_max * r = m * r * a_max
+        # Assume all CoFs (Coefficient of Frictions) are 1
+        self._brake_torque_base = _total_vehicle_mass * wheel_radius
+        self.yaw_controller = YawController(wheel_base, steer_ratio,
+                                           min_speed, max_lat_accel, max_steer_angle)
+
+        # Tune the parameters in dbw_node
+        self.linear_pid = PID(linear_p_term, linear_i_term, linear_d_term,
+                              decel_limit, accel_limit)
+
+        self._now = None
+        pass
+
+    def reset(self):
+        """
+        Reset PID when there is a raising edge dbw_enable event
+        :return:
+        """
+        self.linear_pid.reset()
+        self._now = None
         pass
 
     def control(self, *args, **kwargs):
@@ -29,9 +58,26 @@ class Controller(object):
         angular_velocity_setpoint = args[2]
         current_velocity = args[3]
 
-        # Reset PID when there is enable, disable event, capturing edge trigger?
+        # Sample time interval:
+        timestamp = rospy.Time.now()
+        if not self._now:
+            _sample_time = 0.02 # 50 Hz
+        else:
+            _sample_time = timestamp - self._now
+        self._now = timestamp
+
+        _error = linear_velocity_setpoint - current_velocity
+
+        _control_correction = self.linear_pid.step(_error, _sample_time)
+
+        if _control_correction > 0:
+            # Throttle
+            pass
+        else:
+            # Brake
+            pass
 
         # Steer and steer ratio
-        steer = self.yawController.get_steering(linear_velocity_setpoint,
-                                                angular_velocity_setpoint, current_velocity)
+        steer = self.yaw_controller.get_steering(linear_velocity_setpoint,
+                                                 angular_velocity_setpoint, current_velocity)
         return 1., 0., 0.

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import rospy
-import tf
 from std_msgs.msg import Bool
 from styx_msgs.msg import Lane, Waypoint
 from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd, SteeringReport
@@ -50,6 +49,10 @@ class DBWNode(object):
 
         min_speed = rospy.get_param('~min_speed', 0.1)
 
+        linear_p_term = rospy.get_param('~linear_p_term', 0.5)
+        linear_i_term = rospy.get_param('~linear_i_term', 0.001)
+        linear_d_term = rospy.get_param('~linear_d_term', 0.05)
+
         self.steer_pub = rospy.Publisher('/vehicle/steering_cmd',
                                          SteeringCmd, queue_size=1)
         self.throttle_pub = rospy.Publisher('/vehicle/throttle_cmd',
@@ -70,22 +73,15 @@ class DBWNode(object):
             'wheel_base': wheel_base,
             'steer_ratio': steer_ratio,
             'max_lat_accel': max_lat_accel,
-            'max_steer_angle': max_steer_angle
-            'reset_controller':
+            'max_steer_angle': max_steer_angle,
+            'min_speed': min_speed,
+            'linear_p_term': linear_p_term,
+            'linear_i_term': linear_i_term,
+            'linear_d_term': linear_d_term
         }
 
         # TODO: Create `TwistController` object
-        self.controller = Controller(vehicle_mass,
-                                     fuel_capacity,
-                                     brake_deadband,
-                                     decel_limit,
-                                     accel_limit,
-                                     wheel_radius,
-                                     wheel_base,
-                                     steer_ratio,
-                                     max_lat_accel,
-                                     max_steer_angle,
-                                     min_speed)
+        self.controller = Controller(**params)
 
         self.dbw_enabled = False
         self._prev_dbw_enabled = self.dbw_enabled
@@ -122,12 +118,22 @@ class DBWNode(object):
                                                                 self.dbw_enabled
                                                                 # Other params
                                                                 )
+            # Brake should be given in units of torque
+            # Which can be calculated using the desired acceleration,
+            # The weight of the vehicle, and the wheel radius
+            # https://carnd.slack.com/archives/C6NVDVAQ3/p1504810396000059?thread_ts=1504735921.000376&cid=C6NVDVAQ3
+
+            # More on brake torque value
+            # https://carnd.slack.com/archives/C6NVDVAQ3/p1504061507000179
+            # 20000 seems a good number
+
             # Test only
             throttle = 0.02
             brake = 0
             steering = 0.1
             if self.edge_trigger():
                 # Reset controller pid here
+                self.controller.reset()
                 pass
 
             if self.dbw_enabled:
