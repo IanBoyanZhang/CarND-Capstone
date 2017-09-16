@@ -128,8 +128,6 @@ class DBWNode(object):
             # 20000 seems a good number
 
             # Test only
-            throttle_scale = 0.5
-
             # throttle = 0.02
             # brake = 0
             # steering = 0.1

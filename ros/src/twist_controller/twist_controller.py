@@ -70,8 +70,11 @@ class Controller(object):
 
         _control_correction = self.linear_pid.step(_error, _sample_time)
 
+        throttle = 0
+        brake = 0
         if _control_correction > 0:
-            accel = _control_correction
+            # Throttle scale
+            accel = _control_correction * 0.5
             # Should multiple it by the nominal value of control input
             throttle = accel
         else:
