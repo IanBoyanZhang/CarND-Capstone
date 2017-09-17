@@ -137,9 +137,9 @@ class DBWNode(object):
 
             # if self.dbw_enabled:
 
-            rospy.loginfo("Throttle: %s: ", throttle)
-            rospy.loginfo("brake: %s: ", brake)
-            rospy.loginfo("steering: %s: ", steering)
+            rospy.logdebug("Throttle: %s: ", throttle)
+            rospy.logdebug("brake: %s: ", brake)
+            rospy.logdebug("steering: %s: ", steering)
             self.publish(throttle, brake, steering)
 
             rate.sleep()
