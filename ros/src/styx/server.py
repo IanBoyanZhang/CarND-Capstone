@@ -13,7 +13,6 @@ from conf import conf
 
 sio = socketio.Server()
 app = Flask(__name__)
-bridge = Bridge(conf)
 # msgs = []
 msgs = {}
 # JLM: Changed to only send the latest message for each topic, rather
