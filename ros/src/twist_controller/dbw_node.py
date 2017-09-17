@@ -112,12 +112,12 @@ class DBWNode(object):
         while not rospy.is_shutdown():
             # TODO: Get predicted throttle, brake, and steering using `twist_controller`
             # You should only publish the control commands if dbw is enabled
-            # throttle, brake, steering = self.controller.control(self.linear_velocity_setpoint,
-            #                                                     self.angular_velocity_setpoint,
-            #                                                     self.current_velocity,
-            #                                                     self.dbw_enabled
+            throttle, brake, steering = self.controller.control(self.linear_velocity_setpoint,
+                                                                self.angular_velocity_setpoint,
+                                                                self.current_velocity,
+                                                                self.dbw_enabled
                                                                 # Other params
-                                                                # )
+                                                                )
             # Brake should be given in units of torque
             # Which can be calculated using the desired acceleration,
             # The weight of the vehicle, and the wheel radius
@@ -128,9 +128,9 @@ class DBWNode(object):
             # 20000 seems a good number
 
             # Test only
-            throttle = 0.02
-            brake = 0
-            steering = 0.1
+            # throttle = 0.02
+            # brake = 0
+            # steering = 0.1
             if self.edge_trigger():
                 # Reset controller pid here
                 self.controller.reset()
