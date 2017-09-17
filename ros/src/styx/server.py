@@ -19,6 +19,7 @@ msgs = {}
 # JLM: Changed to only send the latest message for each topic, rather
 # than queuing out of date messages. Based on
 # https://github.com/amakurin/CarND-Capstone/commit/9809bc60d51c06174f8c8bfe6c40c88ec1c39d50
+
 dbw_enable = False
 
 @sio.on('connect')
@@ -31,7 +32,7 @@ def send(topic, data):
     # sio.emit(topic, data=json.dumps(data), skip_sid=True)
     msgs[topic] = data
 
-bridge.register_server(send)
+bridge = Bridge(conf, send)
 
 @sio.on('telemetry')
 def telemetry(sid, data):
