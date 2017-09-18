@@ -76,12 +76,12 @@ class Controller(object):
         brake = 0
         if _control_correction > 0:
             # Throttle scale
-            accel = _control_correction * 0.5
+            accel = _control_correction * 1
             # Should multiple it by the nominal value of control input
             throttle = accel
         else:
             # Factor to achieve around 20000 max brake torque
-            decel = _control_correction * 10
+            decel = _control_correction * 1
             brake = self._brake_torque_base * decel
 
         # Steer and steer ratio
