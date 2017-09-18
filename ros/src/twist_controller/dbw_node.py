@@ -114,12 +114,15 @@ class DBWNode(object):
             # TODO: Get predicted throttle, brake, and steering using `twist_controller`
             # You should only publish the control commands if dbw is enabled
             # No current_pose yet
-            # polyfit_coeffs = self.get_polyfit_coeffs(self.final_waypoints, self.current_pose)
+            polyfit_coeffs = self._get_polyfit_coeffs(self.final_waypoints, self.current_pose)
+
+            # polyfit_coeffs
             # Calc cte
+            cte = self._get_cte(polyfit_coeffs)
             throttle, brake, steering = self.controller.control(self.linear_velocity_setpoint,
                                                                 self.angular_velocity_setpoint,
                                                                 self.current_velocity,
-                                                                # cte
+                                                                cte
                                                                 # Other params
                                                                 )
             # Brake should be given in units of torque
@@ -184,7 +187,7 @@ class DBWNode(object):
     def final_waypoints_cb(self, msg):
         self.final_waypoints = msg.waypoints
 
-    def get_polyfit_coeffs(self, waypoints, pose):
+    def _get_polyfit_coeffs(self, waypoints, pose):
         """
         https://answers.ros.org/question/69754/quaternion-transformations-in-python/
         2D case
@@ -205,6 +208,9 @@ class DBWNode(object):
 
         # 3 order polyfit
         return np.polyfit(wp_x_in_car_coord, wp_y_in_car_coord, 3)
+
+    def _get_cte(self, poly_coeffs):
+        return poly_coeffs[0]
 
     def edge_trigger(self):
         """

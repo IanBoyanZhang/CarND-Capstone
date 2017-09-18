@@ -64,7 +64,7 @@ class WaypointUpdater(object):
         lane.header.frame_id = msg.header.frame_id
         lane.header.stamp = rospy.Time(0)
         lane.waypoints = self.map_wp[nearest_wp:nearest_wp+LOOKAHEAD_WPS]
-        self.final_waypoints_pub.publish(lane)
+        # self.final_waypoints_pub.publish(lane)
         pass
 
     def waypoints_cb(self, waypoints):
