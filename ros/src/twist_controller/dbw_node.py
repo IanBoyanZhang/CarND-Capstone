@@ -113,7 +113,8 @@ class DBWNode(object):
         while not rospy.is_shutdown():
             # TODO: Get predicted throttle, brake, and steering using `twist_controller`
             # You should only publish the control commands if dbw is enabled
-            polyfit_coeffs = self.get_polyfit_coeffs(self.final_waypoints, self.current_pose)
+            # No current_pose yet
+            # polyfit_coeffs = self.get_polyfit_coeffs(self.final_waypoints, self.current_pose)
             # Calc cte
             throttle, brake, steering = self.controller.control(self.linear_velocity_setpoint,
                                                                 self.angular_velocity_setpoint,
@@ -143,7 +144,8 @@ class DBWNode(object):
             rospy.logdebug("Throttle: %s: ", throttle)
             rospy.logdebug("brake: %s: ", brake)
             rospy.logdebug("steering: %s: ", steering)
-            self.publish(throttle, brake, steering)
+            # self.publish(throttle, brake, steering)
+            self.publish(throttle, 0, steering)
 
             rate.sleep()
 

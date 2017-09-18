@@ -54,9 +54,9 @@ class Controller(object):
     def control(self, *args, **kwargs):
         # TODO: Change the arg, kwarg list to suit your needs
         # Return throttle, brake, steer
-        linear_velocity_setpoint = args[1]
-        angular_velocity_setpoint = args[2]
-        current_velocity = args[3]
+        linear_velocity_setpoint = args[0]
+        angular_velocity_setpoint = args[1]
+        current_velocity = args[2]
 
         # polyfit_coeffs = args[4]
 
