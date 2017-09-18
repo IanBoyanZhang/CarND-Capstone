@@ -58,6 +58,8 @@ class Controller(object):
         angular_velocity_setpoint = args[2]
         current_velocity = args[3]
 
+        # polyfit_coeffs = args[4]
+
         # Sample time interval:
         timestamp = rospy.get_time()
         if not self._now:
@@ -87,3 +89,4 @@ class Controller(object):
                                                  angular_velocity_setpoint, current_velocity)
         # return 1., 0., 0.
         return throttle, brake, steering
+

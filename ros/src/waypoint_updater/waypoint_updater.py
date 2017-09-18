@@ -5,6 +5,7 @@ from geometry_msgs.msg import PoseStamped
 from styx_msgs.msg import Lane, Waypoint
 
 import math
+import tf
 
 '''
 This node will publish waypoints from the car's current position to some `x` distance ahead.
@@ -41,20 +42,29 @@ class WaypointUpdater(object):
         # map_wp is the base_waypoints we get
         self.map_wp = None
 
+        self.next_waypoint_index = None
+
         rospy.spin()
 
     def pose_cb(self, msg):
+        self.current_pose = msg
         # TODO: Implement
-        if self.map_wp is None:
+        # if self.map_wp is None:
+        #     return
+        # nearest_wp = self.find_nearest_wp(msg.pose.position.x, msg.pose.position.y, self.map_wp)
+
+        if self.next_waypoint_index is None or self.map_wp is None:
             return
-        nearest_wp = self.find_nearest_wp(msg.pose.position.x, msg.pose.position.y, self.map_wp)
+
+        self.next_waypoint_index = self.update_next_waypoint()
+        nearest_wp = self.next_waypoint_index
 
         # Pub data
         lane = Lane()
         lane.header.frame_id = msg.header.frame_id
         lane.header.stamp = rospy.Time(0)
         lane.waypoints = self.map_wp[nearest_wp:nearest_wp+LOOKAHEAD_WPS]
-        self.final_waypoints_pub.publish(lane)
+        # self.final_waypoints_pub.publish(lane)
         pass
 
     def waypoints_cb(self, waypoints):
@@ -99,6 +109,30 @@ class WaypointUpdater(object):
                 arg_min = i
         return i
 
+    def update_next_waypoint(self):
+        idx = self.find_nearest_wp()
+
+        map_x = self.map_wp[idx].pose.pose.position.x
+        map_y = self.map_wp[idx].pose.pose.position.y
+
+        x = self.current_pose.pose.position.x
+        y = self.current_pose.pose.position.y
+
+        # Get yaw
+        # This should be universal method
+        quaternion = (
+            self.current_pose.pose.orientation.x,
+            self.current_pose.pose.orientation.y,
+            self.current_pose.pose.orientation.z,
+            self.current_pose.pose.orientation.w,
+        )
+        car_yaw = tf.transformations.eular_from_quaternion(quaternion)[2]
+
+        map_in_car_x = ((map_x - x) * math.cos(car_yaw) + (map_y - y) * math.sin(car_yaw))
+        if ( map_in_car_x < 0):
+            idx += 1
+        self.next_waypoint_index = idx
+        return idx
 
 if __name__ == '__main__':
     try:

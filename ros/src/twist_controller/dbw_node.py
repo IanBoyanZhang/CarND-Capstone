@@ -6,6 +6,7 @@ from styx_msgs.msg import Lane, Waypoint
 from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd, SteeringReport
 from geometry_msgs.msg import TwistStamped, PoseStamped
 import math
+import numpy as np
 
 from twist_controller import Controller
 
@@ -100,7 +101,7 @@ class DBWNode(object):
         rospy.Subscriber('/vehicle/dbw_enabled', Bool, self.dbw_enabled_cb)
         rospy.Subscriber('/current_velocity', TwistStamped, self.current_velocity_cb)
         rospy.Subscriber('/twist_cmd', TwistStamped, self.dbw_twist_cb)
-        # rospy.Subscriber('/current_pose', PoseStamped, self.current_pose_cb)
+        rospy.Subscriber('/current_pose', PoseStamped, self.current_pose_cb)
         rospy.Subscriber('/final_waypoints', Lane, self.final_waypoints_cb)
 
         self.loop()
@@ -112,10 +113,12 @@ class DBWNode(object):
         while not rospy.is_shutdown():
             # TODO: Get predicted throttle, brake, and steering using `twist_controller`
             # You should only publish the control commands if dbw is enabled
+            polyfit_coeffs = self.get_polyfit_coeffs(self.final_waypoints, self.current_pose)
+            # Calc cte
             throttle, brake, steering = self.controller.control(self.linear_velocity_setpoint,
                                                                 self.angular_velocity_setpoint,
                                                                 self.current_velocity,
-                                                                self.dbw_enabled
+                                                                # cte
                                                                 # Other params
                                                                 )
             # Brake should be given in units of torque
@@ -173,21 +176,33 @@ class DBWNode(object):
         self.linear_velocity_setpoint = msg.twist.linear.x
         self.angular_velocity_setpoint = msg.twist.angular.z
 
-    # def current_pose_cb(self, msg):
-    #     self.current_pose = msg.pose
+    def current_pose_cb(self, msg):
+        self.current_pose = msg.pose
 
     def final_waypoints_cb(self, msg):
         self.final_waypoints = msg.waypoints
 
-    # def calculate_cte(self, waypoints, pose):
-    #     """
-    #     https://answers.ros.org/question/69754/quaternion-transformations-in-python/
-    #     :param waypoints: ROS message
-    #     :param pose: ROS message
-    #     :return:
-    #     """
-    #     car_yaw = tf.transformations.eular_from_quaternion(pose.quaternion)[2]
-    #     px = pose.po
+    def get_polyfit_coeffs(self, waypoints, pose):
+        """
+        https://answers.ros.org/question/69754/quaternion-transformations-in-python/
+        2D case
+        :param waypoints: ROS message
+        :param pose: ROS message
+        :return: coeffs
+        """
+        car_yaw = tf.transformations.eular_from_quaternion(pose.quaternion)[2]
+        px = pose.position.x
+        py = pose.position.y
+        wp_x_in_car_coord = []
+        wp_y_in_car_coord = []
+        for index, wp in enumerate(waypoints):
+            x = wp.pose.position.x - px
+            y = wp.pose.position.y - py
+            wp_x_in_car_coord.push(x * math.cos(-car_yaw) - y * math.sin(-car_yaw))
+            wp_y_in_car_coord.push(x * math.sin(-car_yaw) + y * math.cos(-car_yaw))
+
+        # 3 order polyfit
+        return np.polyfit(wp_x_in_car_coord, wp_y_in_car_coord, 3)
 
     def edge_trigger(self):
         """
