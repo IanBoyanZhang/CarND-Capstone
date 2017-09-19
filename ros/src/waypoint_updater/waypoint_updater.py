@@ -70,7 +70,6 @@ class WaypointUpdater(object):
                 for i in range(LOOKAHEAD_WPS):
                     lane.waypoints.append(self.map_wp[(nearest_wp + i)%self.map_wp_len])
                 rospy.loginfo("Waypoints index %s: ", nearest_wp)
-                rospy.logwarn("current_pose: %s", self.current_pose)
                 self.final_waypoints_pub.publish(lane)
 
     def pose_cb(self, msg):
@@ -150,8 +149,10 @@ class WaypointUpdater(object):
         )
         car_yaw = tf.transformations.euler_from_quaternion(quaternion)[2]
 
+        rospy.logwarn("current_pose: %s", car_yaw)
+
         map_in_car_x = ((map_x - x) * math.cos(car_yaw) + (map_y - y) * math.sin(car_yaw))
-        if  map_in_car_x < 0:
+        if map_in_car_x < 0:
             idx += 1
         self.next_waypoint_index = idx
         return idx
