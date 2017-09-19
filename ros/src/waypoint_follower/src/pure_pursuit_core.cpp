@@ -275,6 +275,7 @@ void PurePursuit::getNextWaypoint()
 {
   int path_size = static_cast<int>(current_waypoints_.getSize());
 
+  ROS_ERROR_STREAM("PATH_SIZE: " << path_size);
   // if waypoints are not given, do nothing.
   if (path_size == 0)
   {
@@ -292,8 +293,6 @@ void PurePursuit::getNextWaypoint()
       num_of_next_waypoint_ = i;
       return;
     }
-
-    ROS_ERROR_STREAM("PATH_SIZE: " << path_size);
 
     // if there exists an effective waypoint
     if (getPlaneDistance(current_waypoints_.getWaypointPosition(i), current_pose_.pose.position) > lookahead_distance_)
