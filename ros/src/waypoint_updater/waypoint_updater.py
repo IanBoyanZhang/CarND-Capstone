@@ -55,7 +55,7 @@ class WaypointUpdater(object):
                 lane = Lane()
                 lane.header.frame_id = self.current_pose.header.frame_id
                 lane.header.stamp = rospy.Time(0)
-                lane.waypoints = self.map_wp[self.next_waypoint_index:self.next_waypoint_indexLOOKAHEAD_WPS]
+                lane.waypoints = self.map_wp[self.next_waypoint_index:self.next_waypoint_index + LOOKAHEAD_WPS]
                 self.final_waypoints_pub.publish(lane)
             rate.sleep()
 
