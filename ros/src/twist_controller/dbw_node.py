@@ -54,6 +54,10 @@ class DBWNode(object):
         linear_i_term = rospy.get_param('~linear_i_term', 0.001)
         linear_d_term = rospy.get_param('~linear_d_term', 0.05)
 
+        angular_p_term = rospy.get_param('~angular_p_term', 0.5)
+        angular_i_term = rospy.get_param('~angular_i_term', 0.001)
+        angular_d_term = rospy.get_param('~angular_d_term', 0.05)
+
         self.steer_pub = rospy.Publisher('/vehicle/steering_cmd',
                                          SteeringCmd, queue_size=1)
         self.throttle_pub = rospy.Publisher('/vehicle/throttle_cmd',
@@ -76,9 +80,14 @@ class DBWNode(object):
             'max_lat_accel': max_lat_accel,
             'max_steer_angle': max_steer_angle,
             'min_speed': min_speed,
+
             'linear_p_term': linear_p_term,
             'linear_i_term': linear_i_term,
-            'linear_d_term': linear_d_term
+            'linear_d_term': linear_d_term,
+
+            'angular_p_term': angular_p_term,
+            'angular_i_term': angular_i_term,
+            'angular_d_term': angular_d_term
         }
 
         # TODO: Create `TwistController` object
@@ -114,15 +123,13 @@ class DBWNode(object):
             # TODO: Get predicted throttle, brake, and steering using `twist_controller`
             # You should only publish the control commands if dbw is enabled
             # No current_pose yet
-            polyfit_coeffs = self._get_polyfit_coeffs(self.final_waypoints, self.current_pose)
+            # polyfit_coeffs = self._get_polyfit_coeffs(self.final_waypoints, self.current_pose)
+            # cte = self._get_cte(polyfit_coeffs)
 
-            # polyfit_coeffs
-            # Calc cte
-            cte = self._get_cte(polyfit_coeffs)
             throttle, brake, steering = self.controller.control(self.linear_velocity_setpoint,
                                                                 self.angular_velocity_setpoint,
                                                                 self.current_velocity,
-                                                                cte
+                                                                # cte
                                                                 # Other params
                                                                 )
             # Brake should be given in units of torque

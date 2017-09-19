@@ -25,6 +25,10 @@ class Controller(object):
         linear_i_term = kwargs['linear_i_term']
         linear_d_term = kwargs['linear_d_term']
 
+        angular_p_term = kwargs['angular_p_term']
+        angular_i_term = kwargs['angular_i_term']
+        angular_d_term = kwargs['angular_d_term']
+
         # Calculate required braking torque according to vehicle dynamics?
         _total_vehicle_mass = vehicle_mass + fuel_capacity * GAS_DENSITY
         # Use F = ma to calculate the
@@ -39,7 +43,8 @@ class Controller(object):
         self.linear_pid = PID(linear_p_term, linear_i_term, linear_d_term,
                               decel_limit, accel_limit)
 
-        # self.steering_pid = PID()
+        self.angular_pid = PID(angular_p_term, angular_i_term, angular_d_term)
+
         self._now = None
         pass
 
@@ -58,7 +63,7 @@ class Controller(object):
         linear_velocity_setpoint = args[0]
         angular_velocity_setpoint = args[1]
         current_velocity = args[2]
-        cte = args[3]
+        # cte = args[3]
 
         # Sample time interval:
         timestamp = rospy.get_time()
@@ -85,8 +90,8 @@ class Controller(object):
             brake = self._brake_torque_base * decel
 
         # Steer and steer ratio
-        # steering = self.yaw_controller.get_steering(linear_velocity_setpoint,
-        #                                          angular_velocity_setpoint, current_velocity)
+        steering = self.yaw_controller.get_steering(linear_velocity_setpoint,
+                                                 angular_velocity_setpoint, current_velocity)
         # return 1., 0., 0.
         return throttle, brake, steering
 
