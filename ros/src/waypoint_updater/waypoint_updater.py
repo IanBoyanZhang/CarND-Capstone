@@ -56,8 +56,8 @@ class WaypointUpdater(object):
         # if self.next_waypoint_index is None or self.map_wp is None:
         #     return
 
-        self.next_waypoint_index = self.update_next_waypoint()
-        nearest_wp = self.next_waypoint_index
+        # self.next_waypoint_index = self.update_next_waypoint()
+        # nearest_wp = self.next_waypoint_index
 
         # Pub data
         lane = Lane()
@@ -109,30 +109,30 @@ class WaypointUpdater(object):
                 arg_min = i
         return i
 
-    def update_next_waypoint(self):
-        idx = self.find_nearest_wp()
-
-        map_x = self.map_wp[idx].pose.pose.position.x
-        map_y = self.map_wp[idx].pose.pose.position.y
-
-        x = self.current_pose.pose.position.x
-        y = self.current_pose.pose.position.y
-
-        # Get yaw
-        # This should be universal method
-        quaternion = (
-            self.current_pose.pose.orientation.x,
-            self.current_pose.pose.orientation.y,
-            self.current_pose.pose.orientation.z,
-            self.current_pose.pose.orientation.w,
-        )
-        car_yaw = tf.transformations.eular_from_quaternion(quaternion)[2]
-
-        map_in_car_x = ((map_x - x) * math.cos(car_yaw) + (map_y - y) * math.sin(car_yaw))
-        if ( map_in_car_x < 0):
-            idx += 1
-        self.next_waypoint_index = idx
-        return idx
+    # def update_next_waypoint(self):
+    #     idx = self.find_nearest_wp()
+    #
+    #     map_x = self.map_wp[idx].pose.pose.position.x
+    #     map_y = self.map_wp[idx].pose.pose.position.y
+    #
+    #     x = self.current_pose.pose.position.x
+    #     y = self.current_pose.pose.position.y
+    #
+    #     # Get yaw
+    #     # This should be universal method
+    #     quaternion = (
+    #         self.current_pose.pose.orientation.x,
+    #         self.current_pose.pose.orientation.y,
+    #         self.current_pose.pose.orientation.z,
+    #         self.current_pose.pose.orientation.w,
+    #     )
+    #     car_yaw = tf.transformations.eular_from_quaternion(quaternion)[2]
+    #
+    #     map_in_car_x = ((map_x - x) * math.cos(car_yaw) + (map_y - y) * math.sin(car_yaw))
+    #     if ( map_in_car_x < 0):
+    #         idx += 1
+    #     self.next_waypoint_index = idx
+    #     return idx
 
 if __name__ == '__main__':
     try:
