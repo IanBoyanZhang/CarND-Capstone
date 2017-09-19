@@ -41,8 +41,8 @@ class WaypointUpdater(object):
 
         # map_wp is the base_waypoints we get
         self.map_wp = None
-
         self.next_waypoint_index = None
+        self.map_wp_len = None
 
         # rospy.spin()
 
@@ -51,14 +51,25 @@ class WaypointUpdater(object):
     def loop(self):
         rate = rospy.Rate(10)
         while not rospy.is_shutdown():
-            if self.map_wp and self.next_waypoint_index:
+            # if self.map_wp and self.next_waypoint_index:
+            #     lane = Lane()
+            #     lane.header.frame_id = self.current_pose.header.frame_id
+            #     lane.header.stamp = rospy.Time(0)
+            #     lane.waypoints = self.map_wp[self.next_waypoint_index:self.next_waypoint_index + LOOKAHEAD_WPS]
+            #     rospy.loginfo("Waypoints index %s: ", self.next_waypoint_index)
+            #     self.final_waypoints_pub.publish(lane)
+            # rate.sleep()
+            if self.map_wp:
                 lane = Lane()
                 lane.header.frame_id = self.current_pose.header.frame_id
                 lane.header.stamp = rospy.Time(0)
-                lane.waypoints = self.map_wp[self.next_waypoint_index:self.next_waypoint_index + LOOKAHEAD_WPS]
+                nearest_wp = self.find_nearest_wp(msg.pose.position.x, msg.pose.position.y, self.map_wp)
+                # lane.waypoints = self.map_wp[nearest_wp%map_wp_len:nearest_wp + LOOKAHEAD_WPS]
+                lane.waypoints = []
+                for i in range(LOOKAHEAD_WPS):
+                    lane.waypoints.append(self.map_wp[(nearest_wp + i)%self.map_wp_len])
                 rospy.loginfo("Waypoints index %s: ", self.next_waypoint_index)
                 self.final_waypoints_pub.publish(lane)
-            rate.sleep()
 
     def pose_cb(self, msg):
         self.current_pose = msg
@@ -77,6 +88,7 @@ class WaypointUpdater(object):
     def waypoints_cb(self, waypoints):
         # TODO: Implement
         self.map_wp = waypoints.waypoints;
+        self.map_wp_len = len(self.map_wp)
         # Only need the message once, unsubscribe as soon as we got the message
         self.base_waypoints_sub.unregister()
         pass
