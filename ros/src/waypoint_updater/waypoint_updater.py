@@ -49,12 +49,12 @@ class WaypointUpdater(object):
     def pose_cb(self, msg):
         self.current_pose = msg
         # TODO: Implement
-        # if self.map_wp is None:
-        #     return
-        # nearest_wp = self.find_nearest_wp(msg.pose.position.x, msg.pose.position.y, self.map_wp)
-
-        if self.next_waypoint_index is None or self.map_wp is None:
+        if self.map_wp is None:
             return
+        nearest_wp = self.find_nearest_wp(msg.pose.position.x, msg.pose.position.y, self.map_wp)
+
+        # if self.next_waypoint_index is None or self.map_wp is None:
+        #     return
 
         self.next_waypoint_index = self.update_next_waypoint()
         nearest_wp = self.next_waypoint_index
