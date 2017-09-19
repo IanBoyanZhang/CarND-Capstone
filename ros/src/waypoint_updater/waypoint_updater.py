@@ -51,13 +51,12 @@ class WaypointUpdater(object):
     def loop(self):
         rate = rospy.Rate(10)
         while not rospy.is_shutdown():
-            if (self.map_wp and self.next_waypoint_index):
+            if self.map_wp and self.next_waypoint_index:
                 lane = Lane()
                 lane.header.frame_id = self.current_pose.header.frame_id
                 lane.header.stamp = rospy.Time(0)
                 lane.waypoints = self.map_wp[self.next_waypoint_index:self.next_waypoint_indexLOOKAHEAD_WPS]
-
-            self.final_waypoints_pub.publish(lane)
+                self.final_waypoints_pub.publish(lane)
             rate.sleep()
 
     def pose_cb(self, msg):
