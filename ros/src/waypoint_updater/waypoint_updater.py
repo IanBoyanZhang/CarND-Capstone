@@ -44,25 +44,35 @@ class WaypointUpdater(object):
 
         self.next_waypoint_index = None
 
-        rospy.spin()
+        # rospy.spin()
+
+        self.loop()
+
+    def loop(self):
+        rate = rospy.Rate(10)
+        while not rospy.is_shutdown():
+            if (self.map_wp and self.next_waypoint_index):
+                lane = Lane()
+                lane.header.frame_id = self.current_pose.header.frame_id
+                lane.header.stamp = rospy.Time(0)
+                lane.waypoints = self.map_wp[self.next_waypoint_index:self.next_waypoint_indexLOOKAHEAD_WPS]
+
+            self.final_waypoints_pub.publish(lane)
+            rate.sleep()
 
     def pose_cb(self, msg):
         self.current_pose = msg
         # TODO: Implement
         if self.map_wp is None:
             return
-        nearest_wp = self.find_nearest_wp(msg.pose.position.x, msg.pose.position.y, self.map_wp)
+        # nearest_wp = self.find_nearest_wp(msg.pose.position.x, msg.pose.position.y, self.map_wp)
 
         self.next_waypoint_index = self.update_next_waypoint()
         nearest_wp = self.next_waypoint_index
 
         # Pub data
-        lane = Lane()
-        lane.header.frame_id = msg.header.frame_id
-        lane.header.stamp = rospy.Time(0)
-        lane.waypoints = self.map_wp[nearest_wp:nearest_wp+LOOKAHEAD_WPS]
-        self.final_waypoints_pub.publish(lane)
-        pass
+
+        # pass
 
     def waypoints_cb(self, waypoints):
         # TODO: Implement
@@ -127,7 +137,7 @@ class WaypointUpdater(object):
         car_yaw = tf.transformations.euler_from_quaternion(quaternion)[2]
 
         map_in_car_x = ((map_x - x) * math.cos(car_yaw) + (map_y - y) * math.sin(car_yaw))
-        if ( map_in_car_x < 0):
+        if  map_in_car_x < 0:
             idx += 1
         self.next_waypoint_index = idx
         return idx
