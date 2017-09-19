@@ -64,7 +64,7 @@ class WaypointUpdater(object):
                 lane = Lane()
                 lane.header.frame_id = self.current_pose.header.frame_id
                 lane.header.stamp = rospy.Time(0)
-                nearest_wp = self.find_nearest_wp(self.current_pose.pose.position.x, self.current_pos.pose.position.y, self.map_wp)
+                nearest_wp = self.find_nearest_wp(self.current_pose.pose.position.x, self.current_pose.pose.position.y, self.map_wp)
                 # lane.waypoints = self.map_wp[nearest_wp%map_wp_len:nearest_wp + LOOKAHEAD_WPS]
                 lane.waypoints = []
                 for i in range(LOOKAHEAD_WPS):
