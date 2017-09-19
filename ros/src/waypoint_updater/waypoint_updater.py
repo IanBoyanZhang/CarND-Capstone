@@ -124,7 +124,7 @@ class WaypointUpdater(object):
             self.current_pose.pose.orientation.z,
             self.current_pose.pose.orientation.w,
         )
-        car_yaw = tf.transformations.eular_from_quaternion(quaternion)[2]
+        car_yaw = tf.transformations.euler_from_quaternion(quaternion)[2]
 
         map_in_car_x = ((map_x - x) * math.cos(car_yaw) + (map_y - y) * math.sin(car_yaw))
         if ( map_in_car_x < 0):
