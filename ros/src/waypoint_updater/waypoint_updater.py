@@ -69,7 +69,7 @@ class WaypointUpdater(object):
                 lane.waypoints = []
                 for i in range(LOOKAHEAD_WPS):
                     lane.waypoints.append(self.map_wp[(nearest_wp + i)%self.map_wp_len])
-                rospy.loginfo("Waypoints index %s: ", self.next_waypoint_index)
+                rospy.loginfo("Waypoints index %s: ", nearest_wp)
                 self.final_waypoints_pub.publish(lane)
 
     def pose_cb(self, msg):
