@@ -74,6 +74,7 @@ class WaypointUpdater(object):
 
     def pose_cb(self, msg):
         self.current_pose = msg
+        rospy.loginfo("Current POSE: %s", self.current_pose.position)
         # TODO: Implement
         if self.map_wp is None:
             return
