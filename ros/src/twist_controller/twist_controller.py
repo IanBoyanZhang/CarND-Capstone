@@ -11,7 +11,7 @@ class Controller(object):
         # TODO: Implement
         vehicle_mass = kwargs['vehicle_mass']
         fuel_capacity = kwargs['fuel_capacity']
-        brake_deadband = kwargs['brake_deadband']
+        self.brake_deadband = kwargs['brake_deadband']
         decel_limit = kwargs['decel_limit']
         accel_limit = kwargs['accel_limit']
         wheel_radius = kwargs['wheel_radius']
@@ -85,9 +85,11 @@ class Controller(object):
             # Should multiple it by the nominal value of control input
             throttle = accel
         else:
+            # if _control_correction
             # Factor to achieve around 20000 max brake torque
-            decel = _control_correction * 1
-            brake = self._brake_torque_base * decel
+            decel = abs(_control_correction) * 1
+            if decel > self.brake_deadband:
+                brake = self._brake_torque_base * decel
 
         # Steer and steer ratio
         steering = self.yaw_controller.get_steering(linear_velocity_setpoint,

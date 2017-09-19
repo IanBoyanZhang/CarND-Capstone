@@ -52,9 +52,9 @@ class DBWNode(object):
 
         min_speed = rospy.get_param('~min_speed', 0.1)
 
-        linear_p_term = rospy.get_param('~linear_p_term', 0.5)
-        linear_i_term = rospy.get_param('~linear_i_term', 0.001)
-        linear_d_term = rospy.get_param('~linear_d_term', 0.05)
+        linear_p_term = rospy.get_param('~linear_p_term', 0.9)
+        linear_i_term = rospy.get_param('~linear_i_term', 0.0005)
+        linear_d_term = rospy.get_param('~linear_d_term', 0.07)
 
         angular_p_term = rospy.get_param('~angular_p_term', 0.5)
         angular_i_term = rospy.get_param('~angular_i_term', 0.001)
