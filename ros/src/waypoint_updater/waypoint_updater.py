@@ -43,6 +43,7 @@ class WaypointUpdater(object):
         self.map_wp = None
         self.next_waypoint_index = None
         self.map_wp_len = None
+        self.current_pose = None
 
         # rospy.spin()
 
