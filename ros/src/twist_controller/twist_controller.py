@@ -25,10 +25,6 @@ class Controller(object):
         linear_i_term = kwargs['linear_i_term']
         linear_d_term = kwargs['linear_d_term']
 
-        angular_p_term = kwargs['angular_p_term']
-        angular_i_term = kwargs['angular_i_term']
-        angular_d_term = kwargs['angular_d_term']
-
         # Calculate required braking torque according to vehicle dynamics?
         _total_vehicle_mass = vehicle_mass + fuel_capacity * GAS_DENSITY
         # Use F = ma to calculate the
@@ -37,13 +33,11 @@ class Controller(object):
         # Assume all CoFs (Coefficient of Frictions) are 1
         self._brake_torque_base = _total_vehicle_mass * wheel_radius
         self.yaw_controller = YawController(wheel_base, steer_ratio,
-                                           min_speed, max_lat_accel, max_steer_angle)
+                                            min_speed, max_lat_accel, max_steer_angle)
 
         # Tune the parameters in dbw_node
         self.linear_pid = PID(linear_p_term, linear_i_term, linear_d_term,
                               decel_limit, accel_limit)
-
-        self.angular_pid = PID(angular_p_term, angular_i_term, angular_d_term)
 
         self._now = None
         pass
@@ -60,10 +54,11 @@ class Controller(object):
     def control(self, *args, **kwargs):
         # TODO: Change the arg, kwarg list to suit your needs
         # Return throttle, brake, steer
-        linear_velocity_setpoint = args[0]
-        angular_velocity_setpoint = args[1]
-        current_velocity = args[2]
-        # cte = args[3]
+        linear_velocity_setpoint = kwargs['linear_velocity_setpoint']
+        angular_velocity_setpoint = kwargs['angular_velocity_setpoint']
+        current_linear_velocity = kwargs['current_linear_velocity']
+
+        rospy.logwarn('current_linear_velocity: %s: ', current_linear_velocity)
 
         # Sample time interval:
         timestamp = rospy.get_time()
@@ -73,7 +68,7 @@ class Controller(object):
             _sample_time = timestamp - self._now
         self._now = timestamp
 
-        _error = linear_velocity_setpoint - current_velocity
+        _error = linear_velocity_setpoint - current_linear_velocity
 
         _control_correction = self.linear_pid.step(_error, _sample_time)
 
@@ -85,15 +80,13 @@ class Controller(object):
             # Should multiple it by the nominal value of control input
             throttle = accel
         else:
-            # if _control_correction
             # Factor to achieve around 20000 max brake torque
-            decel = abs(_control_correction) * 1
+            decel = abs(_control_correction)
             if decel > self.brake_deadband:
                 brake = self._brake_torque_base * decel
 
         # Steer and steer ratio
         steering = self.yaw_controller.get_steering(linear_velocity_setpoint,
-                                                 angular_velocity_setpoint, current_velocity)
-        # return 1., 0., 0.
+                                                    angular_velocity_setpoint, current_linear_velocity)
         return throttle, brake, steering
-
+        # return 1., 0., 0.

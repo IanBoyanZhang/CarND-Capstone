@@ -297,7 +297,7 @@ void PurePursuit::getNextWaypoint()
     if (getPlaneDistance(current_waypoints_.getWaypointPosition(i), current_pose_.pose.position) > lookahead_distance_)
     {
       num_of_next_waypoint_ = i;
-//      ROS_ERROR_STREAM("wp = " << i << " dist = " << getPlaneDistance(current_waypoints_.getWaypointPosition(i), current_pose_.pose.position) );
+      //ROS_ERROR_STREAM("wp = " << i << " dist = " << getPlaneDistance(current_waypoints_.getWaypointPosition(i), current_pose_.pose.position) );
       return;
     }
   }
@@ -317,7 +317,7 @@ geometry_msgs::TwistStamped PurePursuit::outputZero() const
 }
 geometry_msgs::TwistStamped PurePursuit::outputTwist(geometry_msgs::Twist t) const
 {
-  double g_lateral_accel_limit = 5.0;
+  double g_lateral_accel_limit = 0.8;
   double ERROR = 1e-8;
 
   geometry_msgs::TwistStamped twist;
