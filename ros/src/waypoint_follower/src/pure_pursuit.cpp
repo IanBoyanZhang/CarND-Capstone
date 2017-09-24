@@ -30,10 +30,11 @@
 
 #include "pure_pursuit_core.h"
 
-constexpr int LOOP_RATE = 30; //processing frequency
+//constexpr int LOOP_RATE = 30; //processing frequency
+constexpr int LOOP_RATE = 20; //processing frequency
 
-// Low performance env
-constexpr int PUB_SUB_QUEUE_SIZE = 1
+const int PUB_SUB_QUEUE_SIZE = 1;
+
 
 int main(int argc, char **argv)
 {
@@ -53,8 +54,7 @@ int main(int argc, char **argv)
 
   ROS_INFO("set publisher...");
   // publish topic
-//  ros::Publisher cmd_velocity_publisher = nh.advertise<geometry_msgs::TwistStamped>("twist_cmd", 10);
-  ros::Publisher cmd_velocity_publisher = nh.advertise<geometry_msgs::TwistStamped>("twist_cmd", PUB_SUB_QUEUE_SIZE);
+  ros::Publisher cmd_velocity_publisher = nh.advertise<geometry_msgs::TwistStamped>("twist_cmd", 10);
 
   ROS_INFO("set subscriber...");
   // subscribe topic
