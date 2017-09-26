@@ -69,25 +69,21 @@ class WaypointUpdater(object):
         lane.header.stamp = rospy.get_rostime()
         lane.waypoints = self.map_wp[nearest_wp:nearest_wp+LOOKAHEAD_WPS]
 
-        # n_stop_wp = len(self.velocity_map)
-        # for i in range(LOOKAHEAD_WPS):
-        #     if (self.stop_wp_active==False):
-        #         vel_2_use = MAX_SPEED
-        #     else:
-        #         if (i<n_stop_wp):
-        #             vel_2_use = self.velocity_map[i]
-        #         else:
-        #             vel_2_use = 0.0
-        #
-        #     self.set_waypoint_velocity(lane.waypoints, i, vel_2_use)
+        n_stop_wp = len(self.velocity_map)
+        for i in range(LOOKAHEAD_WPS):
+            if (self.stop_wp_active==False):
+                vel_2_use = MAX_SPEED
+            else:
+                if (i<n_stop_wp):
+                    vel_2_use = self.velocity_map[i]
+                else:
+                    vel_2_use = 0.0
+            self.set_waypoint_velocity(lane.waypoints, i, vel_2_use)
 
         self.final_waypoints_pub.publish(lane)
 
-
     def waypoints_cb(self, waypoints):
         self.map_wp = waypoints.waypoints
-
-
 
     def calc_stop_wp_map(self, tl): # set the velocities when we see a red light ahead
         tl_wp_idx = self.find_nearest_wp(tl.pose.pose.position.x, tl.pose.pose.position.y)
@@ -110,8 +106,6 @@ class WaypointUpdater(object):
             self.velocity_map.append(v_next)
 
         return True
-
-
 
     def traffic_cb(self, msg):
         if msg.data < 0:

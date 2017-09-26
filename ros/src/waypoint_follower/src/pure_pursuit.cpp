@@ -30,11 +30,11 @@
 
 #include "pure_pursuit_core.h"
 
-//constexpr int LOOP_RATE = 30; //processing frequency
+// Setup for low performance system
+// Reduce LOOP_RATE to be same as dbw loop rate
 constexpr int LOOP_RATE = 20; //processing frequency
 
 const int PUB_SUB_QUEUE_SIZE = 1;
-
 
 int main(int argc, char **argv)
 {
