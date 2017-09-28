@@ -48,6 +48,8 @@ class Bridge(object):
             '/vehicle/steering_cmd': self.callback_steering,
             '/vehicle/throttle_cmd': self.callback_throttle,
             '/vehicle/brake_cmd': self.callback_brake,
+
+            '/base_waypoints': self.callback_base_waypoints
         }
 
         self.subscribers = [rospy.Subscriber(e.topic, TYPE[e.type], self.callbacks[e.topic])
@@ -188,3 +190,6 @@ class Bridge(object):
 
     def callback_brake(self, data):
         self.server('brake', data={'brake': str(data.pedal_cmd)})
+
+    def callback_base_waypoints(self, data):
+        self.server('base_waypoints', data={'base_waypoints': str(data.waypoints)})
