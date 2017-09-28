@@ -12,7 +12,7 @@ import sensor_msgs.point_cloud2 as pcl2
 from std_msgs.msg import Header
 from cv_bridge import CvBridge, CvBridgeError
 
-from styx_msgs.msg import TrafficLight, TrafficLightArray
+from styx_msgs.msg import TrafficLight, TrafficLightArray, Lane
 import numpy as np
 from PIL import Image as PIL_Image
 from io import BytesIO
@@ -31,7 +31,8 @@ TYPE = {
     'steer_cmd': SteeringCmd,
     'brake_cmd': BrakeCmd,
     'throttle_cmd': ThrottleCmd,
-    'image':Image
+    'image': Image,
+    'base_waypoints': Lane
 }
 
 
