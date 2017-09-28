@@ -32,7 +32,7 @@ TYPE = {
     'brake_cmd': BrakeCmd,
     'throttle_cmd': ThrottleCmd,
     'image': Image,
-    'base_waypoints': Lane
+    'Lane': Lane
 }
 
 
