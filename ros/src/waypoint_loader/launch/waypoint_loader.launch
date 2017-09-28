@@ -2,10 +2,6 @@
 <launch>
     <node pkg="waypoint_loader" type="waypoint_loader.py" name="waypoint_loader">
         <param name="path" value="$(find styx)../../../data/wp_yaw_const.csv" />
-<<<<<<< HEAD
-        <param name="velocity" value="40" />
-=======
-        <param name="velocity" value="16" />
->>>>>>> e0bcd0a434d11527f57c661c18ab39a7099da034
+        <param name="velocity" value="10" />
     </node>
 </launch>
