@@ -140,6 +140,12 @@ class Bridge(object):
         self.angular = self.calc_angular(data['yaw'] * math.pi/180.)
         self.publishers['current_velocity'].publish(self.create_twist(self.vel, self.angular))
 
+        _s = ' '
+        position_str = _s.join(position)
+        current_velocity_str = _s.join((self.vel, self.angular))
+        self.server('current_pose', data={'current_pose': position_str})
+        self.server('current_velocity', data={'current_velocity': current_velocity_str})
+
 
     def publish_controls(self, data):
         steering, throttle, brake = data['steering_angle'], data['throttle'], data['brake']
@@ -183,6 +189,7 @@ class Bridge(object):
 
         image_message = self.bridge.cv2_to_imgmsg(image_array, encoding="rgb8")
         self.publishers['image'].publish(image_message)
+        self.server('image', data={'image': imgString})
 
     def callback_steering(self, data):
         self.server('steer', data={'steering_angle': str(data.steering_wheel_angle_cmd)})
