@@ -193,4 +193,15 @@ class Bridge(object):
         self.server('brake', data={'brake': str(data.pedal_cmd)})
 
     def callback_base_waypoints(self, data):
-        self.server('base_waypoints', data={'base_waypoints': str(data.waypoints)})
+        out_str = ' '
+        for wp in data.waypoints:
+            _s = ' '
+            _x = wp.pose.pose.position.x
+            _y = wp.pose.pose.position.y
+            _linear = wp.twist.twist.linear.x
+            _angular = wp.twist.twist.angular.z
+            _s.join((_x, _y, _linear, _angular))
+            out_str += _s
+            out_str += ' '
+        # self.server('base_waypoints', data={'base_waypoints': str(data.waypoints)})
+        self.server('base_waypoints', data={'base_waypoints': out_str})
