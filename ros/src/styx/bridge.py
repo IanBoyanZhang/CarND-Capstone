@@ -51,6 +51,7 @@ class Bridge(object):
             '/vehicle/brake_cmd': self.callback_brake,
 
             '/base_waypoints': self.callback_base_waypoints,
+            '/image_zoomed': self.callback_image_zoomed
         }
 
         self.subscribers = [rospy.Subscriber(e.topic, TYPE[e.type], self.callbacks[e.topic])
@@ -212,3 +213,8 @@ class Bridge(object):
             out_str += ' '
         # self.server('base_waypoints', data={'base_waypoints': str(data.waypoints)})
         self.server('base_waypoints', data={'base_waypoints': out_str})
+
+    def callback_image_zoomed(self, data):
+        cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+        self.server('image_zoomed', data={'image_zoomed': base64.b64encode(cv_image)})
+

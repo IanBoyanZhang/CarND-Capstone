@@ -7,6 +7,7 @@ conf = AttrDict({
         {'topic':'/vehicle/brake_cmd', 'type': 'brake_cmd', 'name': 'brake'},
 
         {'topic':'/base_waypoints', 'type': 'Lane', 'name': 'base_waypoints'},
+        {'topic':'/image_zoomed', 'type': 'Image', 'name': 'image_zoomed'},
     ],
     'publishers': [
         {'topic': '/current_pose', 'type': 'pose', 'name': 'current_pose'},
