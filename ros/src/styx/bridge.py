@@ -200,7 +200,7 @@ class Bridge(object):
             _y = wp.pose.pose.position.y
             _linear = wp.twist.twist.linear.x
             _angular = wp.twist.twist.angular.z
-            _s.join((_x, _y, _linear, _angular))
+            _s.join((str(_x), str(_y), str(_linear), str(_angular)))
             out_str += _s
             out_str += ' '
         # self.server('base_waypoints', data={'base_waypoints': str(data.waypoints)})
