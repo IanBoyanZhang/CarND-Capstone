@@ -215,6 +215,6 @@ class Bridge(object):
         self.server('base_waypoints', data={'base_waypoints': out_str})
 
     def callback_image_zoomed(self, data):
-        cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+        cv_image = self.bridge.imgmsg_to_cv2(data, "rgb8")
         self.server('image_zoomed', data={'image_zoomed': base64.b64encode(cv_image)})
 
