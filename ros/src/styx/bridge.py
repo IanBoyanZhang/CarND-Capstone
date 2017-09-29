@@ -174,6 +174,7 @@ class Bridge(object):
 
     def publish_dbw_status(self, data):
         self.publishers['dbw_status'].publish(Bool(data))
+        self.server('dbw_status', data={'dbw_status': str(data)})
 
     def publish_camera(self, data):
         imgString = data["image"]
@@ -193,7 +194,7 @@ class Bridge(object):
         self.server('brake', data={'brake': str(data.pedal_cmd)})
 
     def callback_base_waypoints(self, data):
-        out_str = ' '
+        out_str = ''
         for wp in data.waypoints:
             _s = ' '
             _x = wp.pose.pose.position.x

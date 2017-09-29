@@ -5,6 +5,7 @@ conf = AttrDict({
         {'topic':'/vehicle/steering_cmd', 'type': 'steer_cmd', 'name': 'steering'},
         {'topic':'/vehicle/throttle_cmd', 'type': 'throttle_cmd', 'name': 'throttle'},
         {'topic':'/vehicle/brake_cmd', 'type': 'brake_cmd', 'name': 'brake'},
+
         {'topic':'/base_waypoints', 'type': 'Lane', 'name': 'base_waypoints'},
     ],
     'publishers': [
