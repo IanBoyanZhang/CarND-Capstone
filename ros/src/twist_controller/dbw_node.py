@@ -95,7 +95,7 @@ class DBWNode(object):
         rospy.Subscriber('/vehicle/dbw_enabled', Bool, self.dbw_enabled_cb)
         rospy.Subscriber('/current_velocity', TwistStamped, self.current_velocity_cb)
         rospy.Subscriber('/twist_cmd', TwistStamped, self.dbw_twist_cb)
-        if rospy.get_param('~use_dbw', True):
+        if rospy.get_param('~use_dbw', False):
             self.loop()
 
     def loop(self):
