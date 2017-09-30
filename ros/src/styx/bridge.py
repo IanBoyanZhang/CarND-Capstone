@@ -226,5 +226,5 @@ class Bridge(object):
         self.publishers['lpf_status'].publish(Bool(data['lpf']))
 
     def publish_lc_status(self, data):
-        self.publishers['lc_status'].pusblish(Bool(data['lc']))
+        self.publishers['lc_status'].publish(Bool(data['lc']))
 
