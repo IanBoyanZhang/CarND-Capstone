@@ -64,8 +64,8 @@ def image(sid, data):
 
 @sio.on('downlink')
 def downlink(sid, data):
-    bridge.publish_lc_status(data)
-    bridge.publish_lc_status(data)
+    bridge.publish_lpf_status(data)
+    # bridge.publish_lc_status(data)
 
 if __name__ == '__main__':
 
