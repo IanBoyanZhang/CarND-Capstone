@@ -82,6 +82,8 @@ class DBWNode(object):
         self.controller = Controller(**params)
 
         self.dbw_enabled = False
+        self.lpf_enabled = False
+        self.lc_enabled = False
         self.steering = .0
         self.brake = .0
         self.throttle = .0
@@ -95,14 +97,14 @@ class DBWNode(object):
         rospy.Subscriber('/vehicle/dbw_enabled', Bool, self.dbw_enabled_cb)
         rospy.Subscriber('/current_velocity', TwistStamped, self.current_velocity_cb)
         rospy.Subscriber('/twist_cmd', TwistStamped, self.dbw_twist_cb)
-        self.loop()
+
+        rospy.Subscriber('/lpf_enabled', Bool, self.lpf_enabled_cb)
+        rospy.Subscriber('/lc_enabled', Bool, self.lc_enabled_cb)
+        if rospy.get_param('use_dbw', True):
+            self.loop()
 
     def loop(self):
         # For low performance setup
-
-        rospy.logwarn('use_dbw %s: ', rospy.get_param('/use_dbw'))
-        if not rospy.get_param('use_dbw'):
-            return
 
         rate = rospy.Rate(20)  # 20Hz
         while not rospy.is_shutdown():
@@ -146,6 +148,12 @@ class DBWNode(object):
     def dbw_twist_cb(self, msg):
         self.linear_velocity_setpoint = msg.twist.linear.x
         self.angular_velocity_setpoint = msg.twist.angular.z
+
+    def lpf_enabled_cb(self, msg):
+        self.lpf_enabled = msg.data
+
+    def lc_enabled_cb(self, msg):
+        self.lc_enabled = msg.data
 
 if __name__ == '__main__':
     DBWNode()
