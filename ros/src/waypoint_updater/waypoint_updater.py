@@ -79,6 +79,8 @@ class WaypointUpdater(object):
             n_stop_wp = len(self.velocity_map)
             for i in range(b - a):
                 rospy.logwarn('i: %s', i)
+                rospy.logwarn('a: %s', a)
+                rospy.logwarn('b: %s', b)
                 print(i)
                 v = self.velocity_map[i] if i < n_stop_wp else 0.0
                 self.set_waypoint_velocity(lane.waypoints, i, v)
