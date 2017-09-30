@@ -78,13 +78,8 @@ class WaypointUpdater(object):
         lane.waypoints = deepcopy(self.map_wp[a:b])
 
         if self.stop_wp_active:
-            self.calc_stop_wp_map(self.tl_wp_idx)
             n_stop_wp = len(self.velocity_map)
             for i in range(b - a):
-                rospy.logwarn('i: %s', i)
-                rospy.logwarn('a: %s', a)
-                rospy.logwarn('b: %s', b)
-                print(i)
                 v = self.velocity_map[i] if i < n_stop_wp else 0.0
                 self.set_waypoint_velocity(lane.waypoints, i, v)
 
@@ -97,8 +92,8 @@ class WaypointUpdater(object):
         self.map_wp = waypoints.waypoints
 
     def calc_stop_wp_map(self, tl_wp_idx): # set the velocities when we see a red light ahead
-        # if (tl_wp_idx < 0) or (tl_wp_idx <= self.waypoint_idx):
-        #     return False
+        if (tl_wp_idx < 0) or (tl_wp_idx <= self.waypoint_idx):
+            return False
 
         n_wp = tl_wp_idx - self.waypoint_idx
         vel = self.current_velocity
@@ -113,12 +108,10 @@ class WaypointUpdater(object):
         # Ensures the car is stopped at the end of the sequence.
         self.velocity_map[-1] = 0.0
 
-        # return True
+        return True
 
     def traffic_cb(self, msg):
-        self.stop_wp_active = False if msg.data < 0 or msg.data <= self.waypoint_idx else True
-        self.tl_wp_idx = msg.data
-        # self.stop_wp_active = self.calc_stop_wp_map(msg.data)
+        self.stop_wp_active = self.calc_stop_wp_map(msg.data)
 
     def obstacle_cb(self, msg):
         # TODO: Callback for /obstacle_waypoint message. We will implement it later
