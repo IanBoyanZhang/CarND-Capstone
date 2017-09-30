@@ -12,7 +12,7 @@ class Controller(object):
         vehicle_mass = kwargs['vehicle_mass']
         fuel_capacity = kwargs['fuel_capacity']
         self.brake_deadband = kwargs['brake_deadband']
-        decel_limit = kwargs['decel_limit']
+        self.decel_limit = kwargs['decel_limit']
         accel_limit = kwargs['accel_limit']
         wheel_radius = kwargs['wheel_radius']
         wheel_base = kwargs['wheel_base']
@@ -81,6 +81,7 @@ class Controller(object):
             decel = abs(_control_correction)
             if decel > self.brake_deadband:
                 brake = self._brake_torque_base * decel * 1
+                brake = decel./self.decel_limit
 
         # Steer and steer ratio
         steering = self.yaw_controller.get_steering(linear_velocity_setpoint,
