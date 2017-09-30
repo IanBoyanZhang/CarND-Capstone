@@ -37,7 +37,7 @@ class Controller(object):
 
         # Tune the parameters in dbw_node
         self.linear_pid = PID(linear_p_term, linear_i_term, linear_d_term,
-                              decel_limit, accel_limit)
+                              self.decel_limit, accel_limit)
 
         self._now = None
 
