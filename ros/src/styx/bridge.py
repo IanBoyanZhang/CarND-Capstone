@@ -190,7 +190,7 @@ class Bridge(object):
 
         image_message = self.bridge.cv2_to_imgmsg(image_array, encoding="rgb8")
         self.publishers['image'].publish(image_message)
-        self.server('image', data={'image': imgString})
+        # self.server('image', data={'image': imgString})
 
     def callback_steering(self, data):
         self.server('steer', data={'steering_angle': str(data.steering_wheel_angle_cmd)})
