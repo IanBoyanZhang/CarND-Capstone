@@ -16,6 +16,8 @@ from light_classification.tl_classifier import TLClassifier
 from styx_msgs.msg import TrafficLight, TrafficLightArray
 from styx_msgs.msg import Lane
 
+import os
+
 STATE_COUNT_THRESHOLD = 3
 
 
@@ -52,59 +54,46 @@ class TLDetector(object):
     def __init__(self):
         rospy.init_node('tl_detector')
 
-        self.light_classifier = TLClassifier()
-
-        self.pose = None
-        self.waypoints = None
+        self.camera = None
         self.camera_image = None
 
+        self.pose = None
         self.stop_indexes = None
         self.traffic_lights = None
+        self.waypoints = None
+
+        self.bridge = CvBridge()
+        self.light_classifier = TLClassifier()
+        self.listener = tf.TransformListener()
+
+        self.last_state = TrafficLight.UNKNOWN
+        self.state = TrafficLight.UNKNOWN
+        self.state_count = 0
+        self.last_wp = -1
+
+        config = yaml.load(rospy.get_param("/traffic_light_config"))
+        self.stop_lines = np.array(config['stop_line_positions'])
 
         self.subscribers = [
+            rospy.Subscriber('/camera_info', CameraInfo, self.camera_info_cb, queue_size=1),
             rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb, queue_size=1),
             rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb, queue_size=1),
             rospy.Subscriber('/image_color', Image, self.image_cb, queue_size=1),
             rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.traffic_cb, queue_size=1)
         ]
 
-        config_string = rospy.get_param("/traffic_light_config")
-        self.config = yaml.load(config_string)
-        self.stop_lines = np.array(self.config['stop_line_positions'])
-
-        # TODO: Move camera info generation to a separate node.
-        image_width = self.config['camera_info']['image_width']
-        image_height = self.config['camera_info']['image_height']
-        fx = self.config['camera_info']['focal_length_x']
-        fy = self.config['camera_info']['focal_length_y']
-        cx = 0.465 * image_width
-        cy = 1.1 * image_height
-        camera_info = CameraInfo()
-        camera_info.header.frame_id = '/base_link'
-        camera_info.width = image_width
-        camera_info.height = image_height
-        camera_info.distortion_model = 'plumb_bob'
-        camera_info.D = [0, 0, 0, 0, 0]
-        camera_info.K = [fx, 0, cx, 0, fy, cy, 0, 0, 1]
-        camera_info.R = [1, 0, 0, 0, 1, 0, 0, 0, 1]
-        camera_info.P = [fx, 0, cx, 0, 0, fy, cy, 0, 0, 0, 1, 0]
-
-        self.camera = PinholeCameraModel()
-        self.camera.fromCameraInfo(camera_info)
-
         self.upcoming_red_light_pub = rospy.Publisher('/traffic_waypoint', Int32, queue_size=1)
         self.image_zoomed = rospy.Publisher('/image_zoomed', Image, queue_size=1)
 
-        self.bridge = CvBridge()
-        self.listener = tf.TransformListener()
-
-        self.state = TrafficLight.UNKNOWN
-        self.last_state = TrafficLight.UNKNOWN
-        self.last_wp = -1
-        self.state_count = 0
-
         # keeps python from exiting until node is stopped
         rospy.spin()
+
+    def camera_info_cb(self, camera_info):
+        if self.camera is not None:
+            return
+
+        self.camera = PinholeCameraModel()
+        self.camera.fromCameraInfo(camera_info)
 
     def pose_cb(self, msg):
         self.pose = msg
@@ -116,16 +105,6 @@ class TLDetector(object):
         self.waypoints = np.array([[w.pose.pose.position.x, w.pose.pose.position.y] for w in waypoints.waypoints])
         self.stop_indexes = np.array([closest(self.waypoints, light) for light in self.stop_lines])
 
-    def traffic_cb(self, msg):
-        if self.traffic_lights is not None:
-            return
-
-        def pose(light):
-            position = light.pose.pose.position
-            return [position.x, position.y, position.z]
-
-        self.traffic_lights = np.array([pose(light) for light in msg.lights])
-
     def image_cb(self, msg):
         r'''Identifies red lights in the incoming camera image and publishes the index
             of the waypoint closest to the red light to /traffic_waypoint
@@ -134,7 +113,6 @@ class TLDetector(object):
             msg (Image): image from car-mounted camera
 
         '''
-        self.has_image = True
         self.camera_image = msg
         light_wp, state = self.process_traffic_lights()
 
@@ -149,17 +127,31 @@ class TLDetector(object):
             self.state = state
         elif self.state_count >= STATE_COUNT_THRESHOLD:
             self.last_state = self.state
-            light_wp = light_wp if state == TrafficLight.RED else -1
+            if (
+                state == TrafficLight.GREEN
+                or (
+                    state == TrafficLight.YELLOW
+                    and self.state_count < 2 * STATE_COUNT_THRESHOLD
+                )
+            ):
+                light_wp = -1
+
             self.last_wp = light_wp
             self.upcoming_red_light_pub.publish(Int32(light_wp))
         else:
             self.upcoming_red_light_pub.publish(Int32(self.last_wp))
+
         self.state_count += 1
 
-    def get_distance(self, x1, y1, x2, y2):
-        " Euclidean distance "
+    def traffic_cb(self, msg):
+        if self.traffic_lights is not None:
+            return
 
-        return ((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)) ** .5
+        def pose(light):
+            position = light.pose.pose.position
+            return [position.x, position.y, position.z]
+
+        self.traffic_lights = np.array([pose(light) for light in msg.lights])
 
     def get_closest_waypoint(self, pose):
         r'''Identifies the closest path waypoint to the given position
@@ -214,27 +206,29 @@ class TLDetector(object):
         Returns:
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         '''
-        if not self.has_image:
+        if self.camera_image is None:
             self.prev_light_loc = None
             return False
 
         (x_tl, y_tl) = self.project_to_image_plane(light + np.array([-0.7, -0.7, 1.0]))
         (x_br, y_br) = self.project_to_image_plane(light + np.array([0.5, 0.5, -1.0]))
 
-        cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "rgb8")
+        cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
         shape = cv_image.shape
 
-        a = int(max(0, y_tl))
+        a = int(max(0, y_tl)+5)
         b = int(min(y_br, shape[0]))
         c = int(max(0, min(x_br, x_tl)))
-        d = int(min(max(x_br, x_tl), shape[1]))
+        d = int(min(max(x_br, x_tl)-20, shape[1]))
 
-        if (b - a) < 50 or (d - c) < 50:
+        if (b - a) < 10 or (d - c) < 10:
             return TrafficLight.UNKNOWN
 
-        zoomed = cv2.resize(cv_image[a:b, c:d], (100, 140))
+        # original 100, 140
+        zoomed = cv2.resize(cv_image[a:b, c:d], (40, 90))
+
         state = self.light_classifier.get_classification(zoomed)
-        self.image_zoomed.publish(self.bridge.cv2_to_imgmsg(zoomed, 'rgb8'))
+        self.image_zoomed.publish(self.bridge.cv2_to_imgmsg(zoomed, 'bgr8'))
         return state
 
     def process_traffic_lights(self):
@@ -245,6 +239,10 @@ class TLDetector(object):
             int: index of waypoint closes to the upcoming stop line for a traffic light (-1 if none exists)
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         '''
+
+        # Entire function has changed? what exacty is going on here?
+        # is it failing to classify all topics, or is it not listening at all?
+
         # Don't process if there are no waypoints or current position.
         if any(v is None for v in [self.waypoints, self.stop_indexes, self.pose]):
             return (-1, TrafficLight.UNKNOWN)

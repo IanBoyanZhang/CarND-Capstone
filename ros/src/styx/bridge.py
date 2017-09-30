@@ -227,5 +227,3 @@ class Bridge(object):
 
     def publish_lc_status(self, msg):
         self.publishers['lc_status'].publish(Bool(msg))
-
-    # def publish_pid_term(self, msg):
