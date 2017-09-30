@@ -225,5 +225,8 @@ class Bridge(object):
     def publish_downlink(self, data):
         # a.encode('ascii', 'ignore')
         # rospy.logwarn('Received!!: %s', float(data.dl.encode('ascii', 'ignore')))
+        # Set parameter
+        use_dbw = rospy.get_param('use_dbw')
         rospy.logwarn('Received!!: %s', float(data['dl']))
+        rospy.logwarn('Param!!: %s', use_dbw)
 
