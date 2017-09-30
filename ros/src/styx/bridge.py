@@ -222,7 +222,7 @@ class Bridge(object):
         img_str = base64.b64encode(im_buffer.getvalue())
         self.server('image_zoomed', data={'image_zoomed': img_str})
 
-    def publish_downlink(self, data):
+    def set_global_downlink_params(self, data):
         # a.encode('ascii', 'ignore')
         # rospy.logwarn('Received!!: %s', float(data.dl.encode('ascii', 'ignore')))
         # Set parameter

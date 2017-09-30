@@ -64,7 +64,7 @@ def image(sid, data):
 
 @sio.on('downlink')
 def downlink(sid, data):
-    bridge.publish_downlink(data)
+    bridge.set_global_downlink_params(data)
 
 if __name__ == '__main__':
 
