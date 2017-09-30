@@ -1,6 +1,7 @@
 import rospy
 
 from yaw_controller import YawController
+from lowpass import LowPassFilter
 from pid import PID
 
 GAS_DENSITY = 2.858
@@ -39,6 +40,7 @@ class Controller(object):
         self.linear_pid = PID(linear_p_term, linear_i_term, linear_d_term,
                               self.decel_limit, accel_limit)
 
+        self.low_pass_filter = LowPassFilter();
         self._now = None
 
     def reset(self):
