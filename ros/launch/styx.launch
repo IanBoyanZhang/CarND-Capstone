@@ -21,5 +21,6 @@
     <!--Traffic Light Locations and Camera Config -->
     <param name="traffic_light_config" textfile="$(find tl_detector)/sim_traffic_light_config.yaml" />
 
+    <!--Communication with remote client -->
     <param name="use_dbw" value="True" />
 </launch>
