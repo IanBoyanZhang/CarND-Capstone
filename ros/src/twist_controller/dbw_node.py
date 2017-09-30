@@ -101,6 +101,7 @@ class DBWNode(object):
     def loop(self):
         # For low performance setup
 
+        rospy.logwarn('use_dbw %s: ', rospy.get_param('use_dbw'))
         if not rospy.get_param('use_dbw'):
             return
 
