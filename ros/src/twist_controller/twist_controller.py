@@ -81,7 +81,7 @@ class Controller(object):
             decel = abs(_control_correction)
             if decel > self.brake_deadband:
                 brake = self._brake_torque_base * decel * 1
-                brake = decel./self.decel_limit
+                brake = abs(decel./self.decel_limit)
 
         # Steer and steer ratio
         steering = self.yaw_controller.get_steering(linear_velocity_setpoint,
