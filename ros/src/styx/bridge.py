@@ -222,10 +222,9 @@ class Bridge(object):
         img_str = base64.b64encode(im_buffer.getvalue())
         self.server('image_zoomed', data={'image_zoomed': img_str})
 
-    def publish_lpf_status(self, data):
-        self.publishers['lpf_status'].publish(Bool(data['lpf']))
+    def publish_lpf_status(self, msg):
+        self.publishers['lpf_status'].publish(Bool(msg))
 
-    def publish_lc_status(self, data):
-        # self.publishers['lc_status'].publish(Bool(data['lc']))
-        return
+    def publish_lc_status(self, msg):
+        self.publishers['lc_status'].publish(Bool(msg))
 
