@@ -227,6 +227,6 @@ class Bridge(object):
         # rospy.logwarn('Received!!: %s', float(data.dl.encode('ascii', 'ignore')))
         # Set parameter
         # use_dbw = rospy.get_param('use_dbw')
-        rospy.logwarn('Received!!: %s', float(data['dl']))
+        rospy.logwarn('Received!!: %s', data['dl'])
         rospy.set_param('use_dbw', float(data['dl']))
 
