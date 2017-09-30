@@ -216,6 +216,6 @@ class Bridge(object):
 
     def callback_image_zoomed(self, data):
         cv_image = np.asarray(self.bridge.imgmsg_to_cv2(data, "rgb8"))
-        rospy.warn('cv_image shape %s', cv_image.shape)
+        rospy.logwarn('cv_image shape %s', cv_image.shape)
         self.server('image_zoomed', data={'image_zoomed': base64.b64encode(cv_image)})
 
