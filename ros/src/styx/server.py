@@ -62,6 +62,10 @@ def trafficlights(sid, data):
 def image(sid, data):
     bridge.publish_camera(data)
 
+@sio.on('downlink')
+def downlink(sid, data):
+    bridge.publish_downlink(data)
+
 if __name__ == '__main__':
 
     # wrap Flask application with engineio's middleware
