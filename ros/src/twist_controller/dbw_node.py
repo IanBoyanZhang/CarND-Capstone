@@ -46,9 +46,9 @@ class DBWNode(object):
         max_lat_accel = rospy.get_param('~max_lat_accel', 3.)
         max_steer_angle = rospy.get_param('~max_steer_angle', 8.)
 
-        linear_p_term = rospy.get_param('~linear_p_term', 1)
-        linear_i_term = rospy.get_param('~linear_i_term', 0.0005)
-        linear_d_term = rospy.get_param('~linear_d_term', 0.05)
+        linear_p_term = rospy.get_param('linear_p_term', 1)
+        linear_i_term = rospy.get_param('linear_i_term', 0.0005)
+        linear_d_term = rospy.get_param('linear_d_term', 0.05)
 
         min_speed = rospy.get_param('~min_speed', 0.0)
 
@@ -95,13 +95,13 @@ class DBWNode(object):
         rospy.Subscriber('/vehicle/dbw_enabled', Bool, self.dbw_enabled_cb)
         rospy.Subscriber('/current_velocity', TwistStamped, self.current_velocity_cb)
         rospy.Subscriber('/twist_cmd', TwistStamped, self.dbw_twist_cb)
-        # if rospy.get_param('~use_dbw', True):
-        self.loop()
+        if rospy.get_param('use_dbw', True):
+            self.loop()
 
     def loop(self):
         # For low performance setup
 
-        if not rospy.get_param('~use_dbw'):
+        if not rospy.get_param('use_dbw'):
             return
 
         rate = rospy.Rate(20)  # 20Hz

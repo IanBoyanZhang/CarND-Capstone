@@ -23,4 +23,7 @@
 
     <!--Communication with remote client -->
     <param name="use_dbw" value="True" />
+    <param name="linear_p_term" value="1" />
+    <param name="linear_i_term" value="0.0005" />
+    <param name="linear_d_term" value="0.05" />
 </launch>
