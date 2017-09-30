@@ -150,9 +150,11 @@ class DBWNode(object):
         self.angular_velocity_setpoint = msg.twist.angular.z
 
     def lpf_enabled_cb(self, msg):
+        rospy.logwarn('%s', msg.data)
         self.lpf_enabled = msg.data
 
     def lc_enabled_cb(self, msg):
+        rospy.logwarn('%s', msg.data)
         self.lc_enabled = msg.data
 
 if __name__ == '__main__':
