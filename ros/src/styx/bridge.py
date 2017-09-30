@@ -219,7 +219,7 @@ class Bridge(object):
         im_buffer = BytesIO()
         im = PIL_Image.fromarray(cv_image_np)
         im.save(im_buffer, format="JPEG")
-        img_str = base64.b64encode(buffer.getvalue())
+        img_str = base64.b64encode(im_buffer.getvalue())
         rospy.logwarn('img_str: %s: ', img_str)
         self.server('image_zoomed', data={'image_zoomed': img_str})
 
