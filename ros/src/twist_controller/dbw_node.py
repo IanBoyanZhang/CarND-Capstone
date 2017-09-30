@@ -95,11 +95,15 @@ class DBWNode(object):
         rospy.Subscriber('/vehicle/dbw_enabled', Bool, self.dbw_enabled_cb)
         rospy.Subscriber('/current_velocity', TwistStamped, self.current_velocity_cb)
         rospy.Subscriber('/twist_cmd', TwistStamped, self.dbw_twist_cb)
-        if rospy.get_param('use_dbw', False):
+        if rospy.get_param('~use_dbw', False):
             self.loop()
 
     def loop(self):
         # For low performance setup
+
+        if not rospy.get_param('use_dbw'):
+            return
+
         rate = rospy.Rate(20)  # 20Hz
         while not rospy.is_shutdown():
             controller_params = {
