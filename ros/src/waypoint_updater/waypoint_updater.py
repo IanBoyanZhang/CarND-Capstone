@@ -100,7 +100,7 @@ class WaypointUpdater(object):
         dv = 1.5 * vel * (1.0 / n_wp)
         self.velocity_map = []
         for i in range(n_wp):
-            vel /= dv
+            vel -= dv
             if (vel < MIN_SPEED):
                 vel = 0.0
             self.velocity_map.append(vel)
