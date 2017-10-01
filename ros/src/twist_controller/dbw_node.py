@@ -8,6 +8,8 @@ import math
 
 from twist_controller import Controller
 
+# m/s
+LOW_SPEED_THRESHOLD = 3
 
 class DBWNode(object):
     def __init__(self):
@@ -81,13 +83,19 @@ class DBWNode(object):
             self.controller.reset()
             return
 
-        command = self.controller.control(
+        _linear_velocity = msg.twist.linear.x
+
+        throttle, brake, steer = self.controller.control(
             angular_velocity_setpoint=self.angular_velocity,
             linear_velocity_setpoint=self.linear_velocity,
-            current_linear_velocity=msg.twist.linear.x
+            current_linear_velocity=_linear_velocity
         )
 
-        self.publish(*command)
+        # Use launch_control when start from around zero speed
+        if throttle > 0 and _linear_velocity < LOW_SPEED_THRESHOLD:
+            throttle = self.controller.launch_control(_linear_velocity)
+
+        self.publish(throttle=throttle, brake=brake, steer=steer)
 
     def dbw_twist_cb(self, msg):
         self.angular_velocity = msg.twist.angular.z

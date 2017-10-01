@@ -1,4 +1,5 @@
 import rospy
+import math
 
 from yaw_controller import YawController
 from lowpass import LowPassFilter
@@ -14,7 +15,7 @@ class Controller(object):
         fuel_capacity = kwargs['fuel_capacity']
         self.brake_deadband = kwargs['brake_deadband']
         self.decel_limit = kwargs['decel_limit']
-        accel_limit = kwargs['accel_limit']
+        self.accel_limit = kwargs['accel_limit']
         wheel_radius = kwargs['wheel_radius']
         wheel_base = kwargs['wheel_base']
         steer_ratio = kwargs['steer_ratio']
@@ -92,4 +93,12 @@ class Controller(object):
         # Steer and steer ratio
         steering = self.yaw_controller.get_steering(linear_velocity_setpoint,
                                                     angular_velocity_setpoint, current_linear_velocity)
+
         return throttle, brake, steering
+
+    def launch_control(self, vel):
+        return self._logistic(self.accel_limit, vel)
+
+    def _logistic(self, max_x, x):
+        return max_x / (1 + pow(math.exp(1), 4 - x))
+
