@@ -39,7 +39,7 @@ class Controller(object):
 
         # Tune the parameters in dbw_node
         self.linear_pid = PID(linear_p_term, linear_i_term, linear_d_term,
-                              self.decel_limit, accel_limit)
+                              self.decel_limit, self.accel_limit)
 
         # tau/ts is actual in use
         # Simple FIR filter
