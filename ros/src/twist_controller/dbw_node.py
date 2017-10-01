@@ -39,6 +39,8 @@ class DBWNode(object):
         self.angular_velocity = 0.0
         self.linear_velocity = 0.0
 
+        LOW_SPEED_THRESHOLD = rospy.get_param('~low_speed_threshold', 3)
+
         # DBW activation state
         self.dbw_enabled = False
         self.steer_pub = rospy.Publisher('/vehicle/steering_cmd', SteeringCmd, queue_size=1)
@@ -92,7 +94,7 @@ class DBWNode(object):
         )
 
         # Use launch_control when start from around zero speed
-        if throttle > 0 and _linear_velocity < LOW_SPEED_THRESHOLD:
+        if throttle > 0.08 and _linear_velocity < LOW_SPEED_THRESHOLD:
             throttle = self.controller.launch_control(_linear_velocity)
 
         self.publish(throttle=throttle, brake=brake, steer=steer)

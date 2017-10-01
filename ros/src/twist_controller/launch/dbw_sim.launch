@@ -12,6 +12,7 @@
         <param name="max_lat_accel" value="3." />
         <param name="max_steer_angle" value="8." />
         <param name="use_dbw" value="True" />
+        <param name="low_speed_threshold" value="True" />
         <param name="linear_p_term" value="1" />
         <param name="linear_i_term" value="0.0005" />
         <param name="linear_d_term" value="0.05" />
