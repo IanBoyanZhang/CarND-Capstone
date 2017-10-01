@@ -40,7 +40,8 @@ class Controller(object):
         self.linear_pid = PID(linear_p_term, linear_i_term, linear_d_term,
                               self.decel_limit, accel_limit)
 
-        self.low_pass_filter = LowPassFilter(0.1, 0.1);
+        # tau/ts is actual in use
+        self.low_pass_filter = LowPassFilter(5, 10)
         self._now = None
 
     def reset(self):
