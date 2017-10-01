@@ -100,6 +100,6 @@ class Controller(object):
         return self._logistic(self.accel_limit, vel)
 
     def _logistic(self, max_x, x):
-        _steepness = 0.5
+        _steepness = 0.3
         return max_x / (1 + pow(math.exp(1), _steepness * (4 - x)))
 
