@@ -41,7 +41,8 @@ class Controller(object):
                               self.decel_limit, accel_limit)
 
         # tau/ts is actual in use
-        self.low_pass_filter = LowPassFilter(5, 10)
+        # Simple FIR filter
+        self.low_pass_filter = LowPassFilter(.5, 1)
         self._now = None
 
     def reset(self):
@@ -70,6 +71,8 @@ class Controller(object):
         _error = linear_velocity_setpoint - current_linear_velocity
 
         _control_correction = self.linear_pid.step(_error, _sample_time)
+
+        _control_correction = self.low_pass_filter.filt(_control_correction)
 
         throttle = 0
         brake = 0
