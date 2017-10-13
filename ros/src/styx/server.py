@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
-import socketio
 import eventlet
+
+# "Greens" the module environment for eventlet.
+# See: http://eventlet.net/doc/patching.html
+eventlet.monkey_patch()
+
+import socketio
 import eventlet.wsgi
 import time
 from flask import Flask, render_template
@@ -9,14 +14,13 @@ from flask import Flask, render_template
 from bridge import Bridge
 from conf import conf
 
-sio = socketio.Server()
-app = Flask(__name__)
+# Enforce use of eventlet for asynchronous operations.
+sio = socketio.Server(async_mode='eventlet')
 
-# on low performance system
-# msgs = []
+app = Flask(__name__)
+dbw_enable = False
 msgs = {}
 
-dbw_enable = False
 
 @sio.on('connect')
 def connect(sid, environ):
@@ -24,9 +28,6 @@ def connect(sid, environ):
 
 def send(topic, data):
     msgs[topic] = data
-    # s = 1
-    # msgs.append((topic, data))
-    #sio.emit(topic, data=json.dumps(data), skip_sid=True)
 
 bridge = Bridge(conf, send)
 
@@ -36,11 +37,18 @@ def telemetry(sid, data):
     if data["dbw_enable"] != dbw_enable:
         dbw_enable = data["dbw_enable"]
         bridge.publish_dbw_status(dbw_enable)
+
     bridge.publish_odometry(data)
-    for i in range(len(msgs)):
-        # topic, data = msgs.pop(0)
-        topic, data = msgs.popitem()
+
+    # Copy messages before sending to avoid race conditions.
+    # Clean up message buffer afterwards.
+    sending = list(msgs.items())
+    msgs.clear()
+
+    # Send all messages to simulator.
+    for (topic, data) in sending:
         sio.emit(topic, data=data, skip_sid=True)
+
 
 @sio.on('control')
 def control(sid, data):
@@ -62,8 +70,13 @@ def trafficlights(sid, data):
 def image(sid, data):
     bridge.publish_camera(data)
 
-if __name__ == '__main__':
+@sio.on('downlink')
+def downlink(sid, data):
+    bridge.publish_lpf_status(data['lpf'])
+    bridge.publish_lc_status(data['lc'])
 
+
+if __name__ == '__main__':
     # wrap Flask application with engineio's middleware
     app = socketio.Middleware(sio, app)
 
